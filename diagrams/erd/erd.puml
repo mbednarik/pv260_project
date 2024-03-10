@@ -1,0 +1,51 @@
+@startuml erd
+
+hide circle
+
+skinparam linetype ortho
+
+Entity Fund {
+    * id
+    --
+    * name: String
+}
+
+Entity Company {
+    * id
+    --
+    * name: String
+    * cusip: String
+      ticker: String
+}
+
+Entity Holding {
+    * id
+    --
+    * date: DateTime
+    * fundId: <<FK>>
+    * companyId: <<FK>>
+    * shares: Decimal
+    * market_value: Decimal
+    * weight: Decimal
+}
+
+
+Entity HoldingDiff {
+  * id
+  --
+  * newHoldingId: <<FK>>
+  * fundId: <<FK>>
+  * companyId: <<FK>>
+  * shares: Decimal
+  * shares_change: Decimal
+  * weight: Decimal
+    oldHoldingId: <<FK>>
+}
+
+Fund ||--o{ Holding
+Company ||--o{ Holding
+Fund ||--o{ HoldingDiff
+Company ||--o{ HoldingDiff
+Holding }|--o{ HoldingDiff: 1..2
+
+@enduml
