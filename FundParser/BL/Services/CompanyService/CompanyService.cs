@@ -33,6 +33,7 @@ public class CompanyService : ICompanyService
             Ticker = company.Ticker,
             Name = company.Name,
         });
+
         await _uow.CommitAsync();
         return _mapper.Map<CompanyDTO>(newCompany);
     }
