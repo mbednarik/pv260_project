@@ -4,5 +4,5 @@ namespace BL.Services.FundService;
 
 public interface IFundService
 {
-    Task<FundDTO?> AddFundIfNotExists(AddFundDTO fund);
+    Task<FundDTO?> PrepareFundIfNotExists(AddFundDTO fund);
 }

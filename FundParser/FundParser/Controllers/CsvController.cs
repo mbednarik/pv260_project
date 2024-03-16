@@ -17,29 +17,9 @@ public class CsvController : ControllerBase
     [HttpPost(Name = "csv")]
     public async Task<IActionResult> CsvUpload()
     {
-        // TODO: add url to request body
-        var url = "http://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv";
-        var resultRows = await _fundCsvService.GetRowsFromUrl(url);
-
-        if (resultRows == null)
-        {
-            return BadRequest();
-        }
-
-        var successfulInserts = 0;
-
-        foreach (var row in resultRows)
-        {
-            var successfullyInserted = await _fundCsvService.InsertRowIntoDb(row);
-            if (successfullyInserted)
-            {
-                successfulInserts++;
-            }
-        }
-
-        return Ok(new
-        {
-            InsertedRows = successfulInserts,
-        });
+        // temporary endpoint to update holdings for testing purposes
+        await _fundCsvService.UpdateHoldings();
+        
+        return Ok();
     }
 }

@@ -17,7 +17,7 @@ public class CompanyService : ICompanyService
         _mapper = mapper;
     }
 
-    public async Task<CompanyDTO?> AddCompanyIfNotExists(AddCompanyDTO company)
+    public async Task<CompanyDTO?> PrepareCompanyIfNotExists(AddCompanyDTO company)
     {
         // Cusip should be unique
         var existingCompany = await _uow.CompanyRepository.GetQueryable()
@@ -34,7 +34,6 @@ public class CompanyService : ICompanyService
             Name = company.Name,
         });
 
-        await _uow.CommitAsync();
         return _mapper.Map<CompanyDTO>(newCompany);
     }
 }

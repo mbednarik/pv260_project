@@ -4,5 +4,5 @@ namespace BL.Services.CompanyService;
 
 public interface ICompanyService
 {
-    Task<CompanyDTO?> AddCompanyIfNotExists(AddCompanyDTO company);
+    Task<CompanyDTO?> PrepareCompanyIfNotExists(AddCompanyDTO company);
 }

@@ -17,27 +17,19 @@ public class FundService : IFundService
         _mapper = mapper;
     }
 
-    public async Task<FundDTO?> AddFundIfNotExists(AddFundDTO fund)
+    public async Task<FundDTO?> PrepareFundIfNotExists(AddFundDTO fund)
     {
-        try
+        var existingFund = await _uow.FundRepository.GetQueryable().FirstOrDefaultAsync(f => f.Name == fund.Name);
+        if (existingFund != null)
         {
-            var existingFund = await _uow.FundRepository.GetQueryable().FirstOrDefaultAsync(f => f.Name == fund.Name);
-            if (existingFund != null)
-            {
-                return _mapper.Map<FundDTO>(existingFund);
-            }
+            return _mapper.Map<FundDTO>(existingFund);
+        }
 
-            var newFund = _uow.FundRepository.Insert(new Fund
-            {
-                Name = fund.Name,
-            });
-            await _uow.CommitAsync();
-            return _mapper.Map<FundDTO>(newFund);
-        }
-        catch (Exception e)
+        var newFund = _uow.FundRepository.Insert(new Fund
         {
-            Console.WriteLine("AddFundIfNotExists error: {0}", e.Message);
-            return null;
-        }
+            Name = fund.Name,
+        });
+
+        return _mapper.Map<FundDTO>(newFund);
     }
 }

@@ -23,27 +23,19 @@ namespace BL.Services.HoldingService
             return _mapper.Map<IEnumerable<HoldingDTO>>(holdings.ToList());
         }
 
-        public async Task<HoldingDTO?> AddHolding(AddHoldingDTO holding)
+        public async Task<HoldingDTO?> PrepareHolding(AddHoldingDTO holding)
         {
-            try
+            var newHolding = _uow.HoldingRepository.Insert(new Holding
             {
-                var newHolding = _uow.HoldingRepository.Insert(new Holding
-                {
-                    FundId = holding.FundId,
-                    CompanyId = holding.CompanyId,
-                    MarketValue = holding.MarketValue,
-                    Date = holding.Date,
-                    Weight = holding.Weight,
-                    Shares = holding.Shares,
-                });
-                await _uow.CommitAsync();
-                return _mapper.Map<HoldingDTO>(newHolding);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("AddHolding error: {0}", e.Message);
-                return null;
-            }
+                FundId = holding.FundId,
+                CompanyId = holding.CompanyId,
+                MarketValue = holding.MarketValue,
+                Date = holding.Date,
+                Weight = holding.Weight,
+                Shares = holding.Shares,
+            });
+
+            return _mapper.Map<HoldingDTO>(newHolding);
         }
     }
 }
