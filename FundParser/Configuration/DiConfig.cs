@@ -33,7 +33,7 @@ namespace Configuration
             services.AddScoped<IHoldingService, HoldingService>();
             services.AddScoped<IFundService, FundService>();
             services.AddScoped<ICompanyService, CompanyService>();
-            services.AddScoped<ICsvService, CsvService>();
+            services.AddScoped<ICsvService, FundCsvService>();
 
             services.AddScoped<CsvDownloader<FundCsvRow>>();
         }

@@ -8,14 +8,14 @@ using DAL.Models;
 
 namespace BL.Services.CsvService;
 
-public class CsvService : ICsvService
+public class FundCsvService : ICsvService
 {
     private readonly IFundService _fundService;
     private readonly ICompanyService _companyService;
     private readonly IHoldingService _holdingService;
     private readonly CsvDownloader<FundCsvRow> _csvDownloader;
 
-    public CsvService(IFundService fundService, ICompanyService companyService, IHoldingService holdingService, CsvDownloader<FundCsvRow> csvDownloader)
+    public FundCsvService(IFundService fundService, ICompanyService companyService, IHoldingService holdingService, CsvDownloader<FundCsvRow> csvDownloader)
     {
         _fundService = fundService;
         _companyService = companyService;
