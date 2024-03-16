@@ -5,6 +5,6 @@ namespace BL.Services.HoldingDiffService
 {
     public interface IHoldingDiffService
     {
-        IEnumerable<HoldingDiff> CalculateHoldingDiffs(DateTime oldHoldingsDate, DateTime newHoldingsDate);
+        void CalculateAndStoreHoldingDiffs(DateTime oldHoldingsDate, DateTime newHoldingsDate);
     }
 }
