@@ -13,9 +13,9 @@ public class CsvService : ICsvService
     private readonly IFundService _fundService;
     private readonly ICompanyService _companyService;
     private readonly IHoldingService _holdingService;
-    private readonly CsvDownloader<CsvRow> _csvDownloader;
+    private readonly CsvDownloader<FundCsvRow> _csvDownloader;
 
-    public CsvService(IFundService fundService, ICompanyService companyService, IHoldingService holdingService, CsvDownloader<CsvRow> csvDownloader)
+    public CsvService(IFundService fundService, ICompanyService companyService, IHoldingService holdingService, CsvDownloader<FundCsvRow> csvDownloader)
     {
         _fundService = fundService;
         _companyService = companyService;
@@ -23,7 +23,7 @@ public class CsvService : ICsvService
         _csvDownloader = csvDownloader;
     }
 
-    public async Task<bool> InsertRowIntoDb(CsvRow row)
+    public async Task<bool> InsertRowIntoDb(FundCsvRow row)
     {
         var fund = await _fundService.AddFundIfNotExists(new AddFundDTO
         {
@@ -57,7 +57,7 @@ public class CsvService : ICsvService
         return holding != null;
     }
 
-    public async Task<IEnumerable<CsvRow>?> GetRowsFromUrl(string url)
+    public async Task<IEnumerable<FundCsvRow>?> GetRowsFromUrl(string url)
     {
         return await _csvDownloader.DownloadAndParse(url);
     }

@@ -2,7 +2,7 @@ using CsvHelper.Configuration.Attributes;
 
 namespace DAL.Models;
 
-public class CsvRow
+public class FundCsvRow
 {
     [Name("date")]
     public string date { get; set; }

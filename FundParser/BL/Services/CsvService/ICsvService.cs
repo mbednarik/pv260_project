@@ -4,7 +4,7 @@ namespace BL.Services.CsvService;
 
 public interface ICsvService
 {
-    Task<bool> InsertRowIntoDb(CsvRow row);
+    Task<bool> InsertRowIntoDb(FundCsvRow row);
     
-    Task<IEnumerable<CsvRow>?> GetRowsFromUrl(string url);
+    Task<IEnumerable<FundCsvRow>?> GetRowsFromUrl(string url);
 }

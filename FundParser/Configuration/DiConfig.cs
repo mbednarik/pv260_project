@@ -35,7 +35,7 @@ namespace Configuration
             services.AddScoped<ICompanyService, CompanyService>();
             services.AddScoped<ICsvService, CsvService>();
 
-            services.AddScoped<CsvDownloader<CsvRow>>();
+            services.AddScoped<CsvDownloader<FundCsvRow>>();
         }
     }
 }
