@@ -1,38 +1,23 @@
-import { useState } from "react";
-import "~/App.css";
-import reactLogo from "~/assets/react.svg";
-import viteLogo from "~/assets/vite.svg";
+import { QueryErrorResetBoundary } from "@tanstack/react-query";
+import { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { Container } from "@mantine/core";
+import { ErrorFallback } from "~/components/Fallback/ErrorFallback";
+import { HoldingDiffs } from "~/components/HoldingDiffs/HoldingDiffs";
+import { LoadingFallback } from "~/components/Fallback/LoadingFallback";
 
-function App() {
-  const [count, setCount] = useState(0);
-
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank" rel="noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button
-          type="button"
-          onClick={() => setCount((currentCount) => currentCount + 1)}
-        >
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  );
-}
+const App = () => (
+	<Container h="100vh">
+		<QueryErrorResetBoundary>
+			{({ reset }) => (
+				<ErrorBoundary onReset={reset} fallbackRender={ErrorFallback}>
+					<Suspense fallback={<LoadingFallback />}>
+						<HoldingDiffs />
+					</Suspense>
+				</ErrorBoundary>
+			)}
+		</QueryErrorResetBoundary>
+	</Container>
+);
 
 export default App;
