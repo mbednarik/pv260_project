@@ -1,6 +1,5 @@
 using BL.Services.HoldingService;
 using Microsoft.AspNetCore.Mvc;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FundParser.Controllers
 {
