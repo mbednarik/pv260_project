@@ -1,14 +1,15 @@
 using AutoMapper;
-using BL.Services.CompanyService;
+
 using BL.Services.FundCsvService;
-using BL.Services.FundService;
 using BL.Services.HoldingDiffService;
 using BL.Services.HoldingService;
+
 using DAL.Csv;
 using DAL.Models;
 using DAL.Repository;
 using DAL.UnitOfWork;
 using DAL.UnitOfWork.Interface;
+
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Configuration
@@ -34,8 +35,6 @@ namespace Configuration
 
             //Services DI Setup
             services.AddScoped<IHoldingService, HoldingService>();
-            services.AddScoped<IFundService, FundService>();
-            services.AddScoped<ICompanyService, CompanyService>();
             services.AddScoped<IFundCsvService, FundCsvService>();
 
             services.AddScoped<CsvDownloader<FundCsvRow>>();

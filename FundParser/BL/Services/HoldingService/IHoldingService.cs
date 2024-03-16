@@ -6,6 +6,6 @@ namespace BL.Services.HoldingService
     {
         Task<IEnumerable<HoldingDTO>> GetHoldings();
 
-        Task<HoldingDTO?> PrepareHolding(AddHoldingDTO holding);
+        Task<HoldingDTO> AddHolding(AddHoldingDTO holding);
     }
 }

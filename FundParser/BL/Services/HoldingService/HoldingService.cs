@@ -1,33 +1,53 @@
 ﻿using AutoMapper;
+
 using BL.DTOs;
+
+using DAL.Models;
 using DAL.UnitOfWork.Interface;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace BL.Services.HoldingService
 {
     public class HoldingService : IHoldingService
     {
-        private readonly IUoWHolding _uow;
+        private readonly IUoWHolding _uowHolding;
+        private readonly IUoWFund _uowFund;
+        private readonly IUoWCompany _uowWCompany;
         private readonly IMapper _mapper;
 
-        public HoldingService(IUoWHolding uow,
+        public HoldingService(
+            IUoWHolding uowHolding,
+            IUoWFund uowFund,
+            IUoWCompany uowWCompany,
             IMapper mapper)
         {
-            _uow = uow;
+            _uowHolding = uowHolding;
+            _uowFund = uowFund;
+            _uowWCompany = uowWCompany;
             _mapper = mapper;
+
         }
 
         public async Task<IEnumerable<HoldingDTO>> GetHoldings()
         {
-            var holdings = await _uow.HoldingRepository.GetAll();
+            var holdings = await _uowHolding.HoldingRepository.GetAll();
             return _mapper.Map<IEnumerable<HoldingDTO>>(holdings.ToList());
         }
 
-        public async Task<HoldingDTO?> PrepareHolding(AddHoldingDTO holding)
+        public async Task<HoldingDTO> AddHolding(AddHoldingDTO holding)
         {
-            var newHolding = _uow.HoldingRepository.Insert(new Holding
+            var existingFund = await _uowFund.FundRepository
+                .GetQueryable()
+                .FirstOrDefaultAsync(f => f.Name == holding.Fund.Name);
+            var existingCompany = await _uowWCompany.CompanyRepository
+                .GetQueryable()
+                .FirstOrDefaultAsync(f => f.Cusip == holding.Company.Cusip);
+
+            var newHolding = _uowHolding.HoldingRepository.Insert(new Holding
             {
-                FundId = holding.FundId,
-                CompanyId = holding.CompanyId,
+                Fund = existingFund ?? _mapper.Map<Fund>(holding.Fund),
+                Company = existingCompany ?? _mapper.Map<Company>(holding.Company),
                 MarketValue = holding.MarketValue,
                 Date = holding.Date,
                 Weight = holding.Weight,

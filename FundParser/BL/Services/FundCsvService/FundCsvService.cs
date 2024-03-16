@@ -1,8 +1,8 @@
 using System.Globalization;
+
 using BL.DTOs;
-using BL.Services.CompanyService;
-using BL.Services.FundService;
 using BL.Services.HoldingService;
+
 using DAL.Csv;
 using DAL.Models;
 using DAL.UnitOfWork.Interface;
@@ -11,24 +11,18 @@ namespace BL.Services.FundCsvService;
 
 public class FundCsvService : IFundCsvService
 {
-    private readonly IFundService _fundService;
-    private readonly ICompanyService _companyService;
     private readonly IHoldingService _holdingService;
-    private readonly IUoWFund _uowFund;
-    private readonly IUoWCompany _uowCompany;
     private readonly IUoWHolding _uowHolding;
     private readonly CsvDownloader<FundCsvRow> _csvDownloader;
 
     // TODO: rework this to use a single UoW, separate PR
-    public FundCsvService(IFundService fundService, ICompanyService companyService, IHoldingService holdingService,
-        CsvDownloader<FundCsvRow> csvDownloader, IUoWFund uowFund, IUoWCompany uowCompany, IUoWHolding uowHolding)
+    public FundCsvService(
+        IHoldingService holdingService,
+        CsvDownloader<FundCsvRow> csvDownloader,
+        IUoWHolding uowHolding)
     {
-        _fundService = fundService;
-        _companyService = companyService;
         _holdingService = holdingService;
         _csvDownloader = csvDownloader;
-        _uowFund = uowFund;
-        _uowCompany = uowCompany;
         _uowHolding = uowHolding;
     }
 
@@ -50,17 +44,27 @@ public class FundCsvService : IFundCsvService
             {
                 await ParseRow(row);
                 successfulRows++;
-            } 
+            }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
         }
-        
+
         return successfulRows;
     }
 
-    private (AddFundDTO, AddCompanyDTO, AddHoldingDTO) ParseRowComponents(FundCsvRow row)
+    private async Task ParseRow(FundCsvRow row)
+    {
+        var holding = ParseFund(row);
+
+        await _holdingService.AddHolding(holding);
+
+        // TODO: rework this to use a single UoW, separate PR
+        await _uowHolding.CommitAsync();
+    }
+
+    private AddHoldingDTO ParseFund(FundCsvRow row)
     {
         var fund = new AddFundDTO
         {
@@ -73,29 +77,17 @@ public class FundCsvService : IFundCsvService
             Ticker = row.ticker,
             Name = row.company,
         };
-            
+
         var holding = new AddHoldingDTO
         {
+            Fund = fund,
+            Company = company,
             Shares = decimal.Parse(row.shares),
             MarketValue = decimal.Parse(row.marketValue.TrimStart('$')),
             Weight = decimal.Parse(row.weight.TrimEnd('%')),
             Date = DateTime.ParseExact(row.date, "MM/dd/yyyy", CultureInfo.InvariantCulture),
         };
 
-        return (fund, company, holding);
-    }
-
-    private async Task ParseRow(FundCsvRow row)
-    {
-        var (fund, company, holding) = ParseRowComponents(row);
-        
-        await _fundService.PrepareFundIfNotExists(fund);
-        await _companyService.PrepareCompanyIfNotExists(company);
-        await _holdingService.PrepareHolding(holding);
-        
-        // TODO: rework this to use a single UoW, separate PR
-        await _uowFund.CommitAsync();
-        await _uowCompany.CommitAsync();
-        await _uowHolding.CommitAsync();
+        return holding;
     }
 }
