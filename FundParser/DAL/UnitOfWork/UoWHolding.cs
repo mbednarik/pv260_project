@@ -8,23 +8,23 @@ namespace DAL.UnitOfWork
     {
         public IRepository<Holding> HoldingRepository { get; }
 
-        private readonly FundParserDbContext context;
+        private readonly FundParserDbContext _context;
 
         public UoWHolding(FundParserDbContext context,
             IRepository<Holding> holdingRepository)
         {
-            this.context = context;
+            _context = context;
             HoldingRepository = holdingRepository;
         }
 
         public async Task CommitAsync(CancellationToken cancellationToken = default)
         {
-            await context.SaveChangesAsync(cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public void Dispose()
         {
-            context.Dispose();
+            _context.Dispose();
         }
     }
 }
