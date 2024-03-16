@@ -33,9 +33,9 @@ public class CsvDownloader<T>
             var csvStream = await response.Content.ReadAsStreamAsync();
 
             using var reader = new StreamReader(csvStream);
-            using var csv = new CsvReader(reader, config);
+            using var csvReader = new CsvReader(reader, config);
 
-            return csv.GetRecords<T>().ToList();
+            return csvReader.GetRecords<T>().ToList();
         }
         catch (HttpRequestException e)
         {
