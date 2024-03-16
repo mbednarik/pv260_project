@@ -50,8 +50,8 @@ public class FundCsvService : ICsvService
             FundId = fund.Id,
             CompanyId = company.Id,
             Shares = decimal.Parse(row.shares),
-            MarketValue = decimal.Parse(row.marketValue.Replace('$', ' ')),
-            Weight = decimal.Parse(row.weight.Replace('%', ' ')),
+            MarketValue = decimal.Parse(row.marketValue.TrimStart('$')),
+            Weight = decimal.Parse(row.weight.TrimEnd('%')),
             Date = DateTime.ParseExact(row.date, "MM/dd/yyyy", CultureInfo.InvariantCulture),
         });
         return holding != null;
