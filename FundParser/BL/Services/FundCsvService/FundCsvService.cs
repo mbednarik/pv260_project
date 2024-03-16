@@ -6,9 +6,9 @@ using BL.Services.HoldingService;
 using DAL.Csv;
 using DAL.Models;
 
-namespace BL.Services.CsvService;
+namespace BL.Services.FundCsvService;
 
-public class FundCsvService : ICsvService
+public class FundCsvService : IFundCsvService
 {
     private readonly IFundService _fundService;
     private readonly ICompanyService _companyService;

@@ -1,8 +1,8 @@
 using DAL.Models;
 
-namespace BL.Services.CsvService;
+namespace BL.Services.FundCsvService;
 
-public interface ICsvService
+public interface IFundCsvService
 {
     Task<bool> InsertRowIntoDb(FundCsvRow row);
     

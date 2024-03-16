@@ -1,4 +1,4 @@
-using BL.Services.CsvService;
+using BL.Services.FundCsvService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FundParser.Controllers;
@@ -7,11 +7,11 @@ namespace FundParser.Controllers;
 [Route("[controller]")]
 public class CsvController : ControllerBase
 {
-    private readonly ICsvService _csvService;
+    private readonly IFundCsvService _fundCsvService;
 
-    public CsvController(ICsvService csvService)
+    public CsvController(IFundCsvService fundCsvService)
     {
-        _csvService = csvService;
+        _fundCsvService = fundCsvService;
     }
 
     [HttpPost(Name = "csv")]
@@ -19,7 +19,7 @@ public class CsvController : ControllerBase
     {
         // TODO: add url to request body
         var url = "http://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv";
-        var resultRows = await _csvService.GetRowsFromUrl(url);
+        var resultRows = await _fundCsvService.GetRowsFromUrl(url);
 
         if (resultRows == null)
         {
@@ -30,7 +30,7 @@ public class CsvController : ControllerBase
 
         foreach (var row in resultRows)
         {
-            var successfullyInserted = await _csvService.InsertRowIntoDb(row);
+            var successfullyInserted = await _fundCsvService.InsertRowIntoDb(row);
             if (successfullyInserted)
             {
                 successfulInserts++;

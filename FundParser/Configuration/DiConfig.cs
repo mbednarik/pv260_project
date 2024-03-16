@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using BL.Services.CompanyService;
-using BL.Services.CsvService;
+using BL.Services.FundCsvService;
 using BL.Services.FundService;
 using BL.Services.HoldingService;
 using DAL.Csv;
@@ -33,7 +33,7 @@ namespace Configuration
             services.AddScoped<IHoldingService, HoldingService>();
             services.AddScoped<IFundService, FundService>();
             services.AddScoped<ICompanyService, CompanyService>();
-            services.AddScoped<ICsvService, FundCsvService>();
+            services.AddScoped<IFundCsvService, FundCsvService>();
 
             services.AddScoped<CsvDownloader<FundCsvRow>>();
         }
