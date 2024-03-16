@@ -5,9 +5,8 @@ namespace DAL.Models
 {
     public class HoldingDiff : BaseEntity
     {
-
-        [ForeignKey("Holding")]
-        public int HoldingId { get; set; }
+        public int OldHoldingId { get; set; }
+        public int NewHoldingId { get; set; }
 
         [ForeignKey("Fund")]
         public int FundId { get; set; }
@@ -16,16 +15,23 @@ namespace DAL.Models
         public int CompanyId { get; set; }
 
         [Required]
-        public decimal Shares { get; set; }
+        public decimal OldShares { get; set; }
 
         [Required]
         public decimal SharesChange { get; set; }
+        [Required]
+        public decimal OldWeight { get; set; }
 
         [Required]
-        public decimal Weight { get; set; }
+        public decimal WeightChange { get; set; }
 
         public virtual Fund Fund { get; set; }
         public virtual Company Company { get; set; }
-        public virtual Holding Holding { get; set; }
+
+        [ForeignKey("OldHoldingId")]
+        public virtual Holding OldHolding { get; set; }
+
+        [ForeignKey("NewHoldingId")]
+        public virtual Holding NewHolding { get; set; }
     }
 }
