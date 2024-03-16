@@ -1,12 +1,6 @@
 ﻿using AutoMapper;
 using BL.DTOs;
-using DAL.Models;
 using DAL.UnitOfWork.Interface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BL.Services.HoldingService
 {

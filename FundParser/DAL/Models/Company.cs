@@ -11,7 +11,6 @@ namespace DAL.Models
         [Required]
         public string Cusip { get; set; }
 
-        [Required]
         public string Ticker { get; set; }
 
         public virtual ICollection<Holding> Holdings { get; set; }

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FundParser.Migrations
 {
     [DbContext(typeof(FundParserDbContext))]
-    [Migration("20240310210446_InitialCreate")]
+    [Migration("20240316145455_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -111,11 +111,21 @@ namespace FundParser.Migrations
                         {
                             Id = 1,
                             CompanyId = 1,
-                            Date = new DateTime(2024, 3, 10, 22, 4, 46, 280, DateTimeKind.Local).AddTicks(5402),
+                            Date = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FundId = 1,
                             MarketValue = 50000m,
                             Shares = 1000m,
                             Weight = 0.05m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CompanyId = 1,
+                            Date = new DateTime(2024, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FundId = 1,
+                            MarketValue = 100000m,
+                            Shares = 2000m,
+                            Weight = 0.1m
                         });
                 });
 
@@ -131,16 +141,22 @@ namespace FundParser.Migrations
                     b.Property<int>("FundId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("HoldingId")
+                    b.Property<int>("NewHoldingId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<decimal>("Shares")
+                    b.Property<int>("OldHoldingId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("OldShares")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("OldWeight")
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("SharesChange")
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("Weight")
+                    b.Property<decimal>("WeightChange")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -149,7 +165,9 @@ namespace FundParser.Migrations
 
                     b.HasIndex("FundId");
 
-                    b.HasIndex("HoldingId");
+                    b.HasIndex("NewHoldingId");
+
+                    b.HasIndex("OldHoldingId");
 
                     b.ToTable("HoldingDiffs");
                 });
@@ -187,9 +205,15 @@ namespace FundParser.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DAL.Models.Holding", "Holding")
+                    b.HasOne("DAL.Models.Holding", "NewHolding")
                         .WithMany()
-                        .HasForeignKey("HoldingId")
+                        .HasForeignKey("NewHoldingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DAL.Models.Holding", "OldHolding")
+                        .WithMany()
+                        .HasForeignKey("OldHoldingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -197,7 +221,9 @@ namespace FundParser.Migrations
 
                     b.Navigation("Fund");
 
-                    b.Navigation("Holding");
+                    b.Navigation("NewHolding");
+
+                    b.Navigation("OldHolding");
                 });
 
             modelBuilder.Entity("DAL.Models.Company", b =>
