@@ -2,30 +2,48 @@
 using BL.DTOs;
 using DAL.Models;
 using DAL.UnitOfWork.Interface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BL.Services.HoldingService
 {
     public class HoldingService : IHoldingService
     {
-        private readonly IUoWHolding uow;
-        private readonly IMapper mapper;
+        private readonly IUoWHolding _uow;
+        private readonly IMapper _mapper;
 
-        public HoldingService(IUoWHolding uow, 
-            IMapper mapper) 
+        public HoldingService(IUoWHolding uow,
+            IMapper mapper)
         {
-            this.uow = uow;
-            this.mapper = mapper;
+            _uow = uow;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<HoldingDTO>> GetHoldings()
         {
-            var holdings = await uow.HoldingRepository.GetAll();
-            return mapper.Map<IEnumerable<HoldingDTO>>(holdings.ToList());
+            var holdings = await _uow.HoldingRepository.GetAll();
+            return _mapper.Map<IEnumerable<HoldingDTO>>(holdings.ToList());
+        }
+
+        public async Task<HoldingDTO?> AddHolding(AddHoldingDTO holding)
+        {
+            try
+            {
+                var newHolding = _uow.HoldingRepository.Insert(new Holding
+                {
+                    FundId = holding.FundId,
+                    CompanyId = holding.CompanyId,
+                    MarketValue = holding.MarketValue,
+                    Date = holding.Date,
+                    Weight = holding.Weight,
+                    Shares = holding.Shares,
+                });
+                await _uow.CommitAsync();
+                return _mapper.Map<HoldingDTO>(newHolding);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("AddHolding error: {0}", e.Message);
+                return null;
+            }
         }
     }
 }

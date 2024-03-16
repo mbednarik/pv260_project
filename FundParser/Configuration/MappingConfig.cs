@@ -9,6 +9,8 @@ namespace Configuration
         public static void ConfigureMapping(IMapperConfigurationExpression config)
         {
             config.CreateMap<Holding, HoldingDTO>().ReverseMap();
+            config.CreateMap<Fund, FundDTO>().ReverseMap();
+            config.CreateMap<Company, CompanyDTO>().ReverseMap();
         }
     }
 }

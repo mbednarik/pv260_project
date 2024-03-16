@@ -25,13 +25,14 @@ namespace DAL.Repository
             return entity;
         }
 
-        public virtual void Insert(TEntity entity)
+        public virtual TEntity Insert(TEntity entity)
         {
             if (entity == null)
             {
-                throw new Exception("Arugment entity is null");
+                throw new Exception("Argument entity is null");
             }
-            dbSet.Add(entity);
+            var result = dbSet.Add(entity);
+            return result.Entity;
         }
 
         public virtual void Delete(int id)
