@@ -57,8 +57,8 @@ public class FundCsvService : ICsvService
         return holding != null;
     }
 
-    public async Task<IEnumerable<FundCsvRow>?> GetRowsFromUrl(string url)
+    public Task<IEnumerable<FundCsvRow>?> GetRowsFromUrl(string url)
     {
-        return await _csvDownloader.DownloadAndParse(url);
+        return _csvDownloader.DownloadAndParse(url);
     }
 }
