@@ -4,7 +4,7 @@ using CsvHelper.Configuration;
 
 namespace DAL.Csv;
 
-public class CsvDownloader<T>
+public class CsvDownloader<T> : ICsvDownloader<T>
 {
     private readonly HttpClient _client;
 
