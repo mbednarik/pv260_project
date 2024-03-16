@@ -4,27 +4,27 @@ namespace DAL.Models;
 
 public class CsvRow
 {
-    [Index(0)]
+    [Name("date")]
     public string date { get; set; }
     
-    [Index(1)]
+    [Name("fund")]
     public string fund { get; set; }
     
-    [Index(2)]
+    [Name("company")]
     public string company { get; set; }
     
-    [Index(3)]
+    [Name("ticker")]
     public string ticker { get; set; }
     
-    [Index(4)]
+    [Name("cusip")]
     public string cusip { get; set; }
     
-    [Index(5)]
+    [Name("shares")]
     public string shares { get; set; }
     
-    [Index(6)]
+    [Name("market value")]
     public string marketValue { get; set; }
     
-    [Index(7)]
+    [Name("weight")]
     public string weight { get; set; }
 }
