@@ -17,9 +17,9 @@ namespace DAL.UnitOfWork
             HoldingRepository = holdingRepository;
         }
 
-        public async Task CommitAsync()
+        public async Task CommitAsync(CancellationToken cancellationToken = default)
         {
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
         }
 
         public void Dispose()

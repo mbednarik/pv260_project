@@ -1,10 +1,11 @@
 using BL.DTOs;
-using DAL.Models;
 
 namespace BL.Services.HoldingDiffService
 {
     public interface IHoldingDiffService
     {
-        void CalculateAndStoreHoldingDiffs(DateTime oldHoldingsDate, DateTime newHoldingsDate);
+        Task<IEnumerable<HoldingDiffDTO>> GetHoldingDiffs(int fundId, DateTime oldHoldingDate, DateTime newHoldingDate, CancellationToken cancellationToken = default);
+
+        Task CalculateAndStoreHoldingDiffs(DateTime oldHoldingsDate, DateTime newHoldingsDate, CancellationToken cancellationToken = default);
     }
 }

@@ -1,11 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Models
 {
     public class HoldingDiff : BaseEntity
     {
         public int OldHoldingId { get; set; }
+
         public int NewHoldingId { get; set; }
 
         [ForeignKey("Fund")]
@@ -19,6 +20,7 @@ namespace DAL.Models
 
         [Required]
         public decimal SharesChange { get; set; }
+
         [Required]
         public decimal OldWeight { get; set; }
 
@@ -26,6 +28,7 @@ namespace DAL.Models
         public decimal WeightChange { get; set; }
 
         public virtual Fund Fund { get; set; }
+
         public virtual Company Company { get; set; }
 
         [ForeignKey("OldHoldingId")]
