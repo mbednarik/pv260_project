@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@mantine/dates": "^7.6.2"
+  }
+}

@@ -1,8 +1,8 @@
-import { HoldingDiffsQueryParams } from "~/types/holdingDiff";
+import { HoldingDiff, HoldingDiffsQueryParams } from "~/types/holdingDiff";
 import axios from "~/lib/axios";
 
 const fetchHoldingDiffs = async (params: HoldingDiffsQueryParams) => {
-	const response = await axios.get("/holding-diffs", {
+	const response = await axios.get<HoldingDiff[]>("/holdingDiff", {
 		params,
 	});
 
