@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Data
 {
-    public static class DataInitializer
+    internal static class DataInitializer
     {
         public static void Seed(this ModelBuilder modelBuilder)
         {

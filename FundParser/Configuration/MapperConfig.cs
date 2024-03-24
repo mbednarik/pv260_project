@@ -6,9 +6,9 @@ using DAL.Models;
 
 namespace Configuration
 {
-    public class MappingConfig
+    public class MapperConfig
     {
-        public static void ConfigureMapping(IMapperConfigurationExpression config)
+        public static void ConfigureMapper(IMapperConfigurationExpression config)
         {
             config.CreateMap<Holding, HoldingDTO>().ReverseMap();
             config.CreateMap<Fund, FundDTO>().ReverseMap();

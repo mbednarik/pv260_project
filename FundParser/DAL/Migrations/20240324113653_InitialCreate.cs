@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace FundParser.Migrations
+namespace DAL.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -20,7 +21,8 @@ namespace FundParser.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Cusip = table.Column<string>(type: "TEXT", nullable: false),
-                    Ticker = table.Column<string>(type: "TEXT", nullable: false)
+                    Ticker = table.Column<string>(type: "TEXT", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -33,7 +35,8 @@ namespace FundParser.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: false)
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -51,7 +54,8 @@ namespace FundParser.Migrations
                     CompanyId = table.Column<int>(type: "INTEGER", nullable: false),
                     Shares = table.Column<decimal>(type: "TEXT", nullable: false),
                     MarketValue = table.Column<decimal>(type: "TEXT", nullable: false),
-                    Weight = table.Column<decimal>(type: "TEXT", nullable: false)
+                    Weight = table.Column<decimal>(type: "TEXT", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -83,7 +87,8 @@ namespace FundParser.Migrations
                     OldShares = table.Column<decimal>(type: "TEXT", nullable: false),
                     SharesChange = table.Column<decimal>(type: "TEXT", nullable: false),
                     OldWeight = table.Column<decimal>(type: "TEXT", nullable: false),
-                    WeightChange = table.Column<decimal>(type: "TEXT", nullable: false)
+                    WeightChange = table.Column<decimal>(type: "TEXT", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -116,21 +121,21 @@ namespace FundParser.Migrations
 
             migrationBuilder.InsertData(
                 table: "Companies",
-                columns: new[] { "Id", "Cusip", "Name", "Ticker" },
-                values: new object[] { 1, "CUSIP1", "Company1", "TICK1" });
+                columns: new[] { "Id", "Cusip", "DeletedAt", "Name", "Ticker" },
+                values: new object[] { 1, "CUSIP1", null, "Company1", "TICK1" });
 
             migrationBuilder.InsertData(
                 table: "Funds",
-                columns: new[] { "Id", "Name" },
-                values: new object[] { 1, "Fund1" });
+                columns: new[] { "Id", "DeletedAt", "Name" },
+                values: new object[] { 1, null, "Fund1" });
 
             migrationBuilder.InsertData(
                 table: "Holdings",
-                columns: new[] { "Id", "CompanyId", "Date", "FundId", "MarketValue", "Shares", "Weight" },
+                columns: new[] { "Id", "CompanyId", "Date", "DeletedAt", "FundId", "MarketValue", "Shares", "Weight" },
                 values: new object[,]
                 {
-                    { 1, 1, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, 50000m, 1000m, 0.05m },
-                    { 2, 1, new DateTime(2024, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, 100000m, 2000m, 0.1m }
+                    { 1, 1, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, 1, 50000m, 1000m, 0.05m },
+                    { 2, 1, new DateTime(2024, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, 1, 100000m, 2000m, 0.1m }
                 });
 
             migrationBuilder.CreateIndex(

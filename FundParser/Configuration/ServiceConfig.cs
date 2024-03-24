@@ -13,12 +13,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Configuration
 {
-    public class DiConfig
+    public class ServiceConfig
     {
-        public static void ConfigureDi(IServiceCollection services)
+        public static void ConfigureDependencyInjection(IServiceCollection services)
         {
             // Mapping DI Setup
-            services.AddSingleton<IMapper>(new Mapper(new MapperConfiguration(MappingConfig.ConfigureMapping)));
+            services.AddSingleton<IMapper>(new Mapper(new MapperConfiguration(MapperConfig.ConfigureMapper)));
 
             //Repository DI Setup
             services.AddScoped<IRepository<Holding>, Repository<Holding>>();

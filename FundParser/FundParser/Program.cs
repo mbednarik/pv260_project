@@ -6,8 +6,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-DiConfig.ConfigureDi(builder.Services);
-SetupServices.AddServices(builder.Services, builder.Configuration);
+ServiceConfig.ConfigureDependencyInjection(builder.Services);
+DatabaseConfig.ConfigureDbContext(builder.Services, builder.Configuration);
 
 var app = builder.Build();
 

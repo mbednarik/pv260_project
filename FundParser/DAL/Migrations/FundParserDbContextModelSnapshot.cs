@@ -3,22 +3,23 @@ using System;
 using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace FundParser.Migrations
+namespace DAL.Migrations
 {
     [DbContext(typeof(FundParserDbContext))]
-    [Migration("20240315105021_AddCreatedAtAndDeletedAt")]
-    partial class AddCreatedAtAndDeletedAt
+    partial class FundParserDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.2");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "8.0.3")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true);
 
             modelBuilder.Entity("DAL.Models.Company", b =>
                 {
@@ -43,7 +44,7 @@ namespace FundParser.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Companies");
+                    b.ToTable("Companies", (string)null);
 
                     b.HasData(
                         new
@@ -70,7 +71,7 @@ namespace FundParser.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Funds");
+                    b.ToTable("Funds", (string)null);
 
                     b.HasData(
                         new
@@ -113,18 +114,28 @@ namespace FundParser.Migrations
 
                     b.HasIndex("FundId");
 
-                    b.ToTable("Holdings");
+                    b.ToTable("Holdings", (string)null);
 
                     b.HasData(
                         new
                         {
                             Id = 1,
                             CompanyId = 1,
-                            Date = new DateTime(2024, 3, 15, 11, 50, 20, 511, DateTimeKind.Local).AddTicks(9890),
+                            Date = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FundId = 1,
                             MarketValue = 50000m,
                             Shares = 1000m,
                             Weight = 0.05m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CompanyId = 1,
+                            Date = new DateTime(2024, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FundId = 1,
+                            MarketValue = 100000m,
+                            Shares = 2000m,
+                            Weight = 0.1m
                         });
                 });
 
@@ -143,16 +154,22 @@ namespace FundParser.Migrations
                     b.Property<int>("FundId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("HoldingId")
+                    b.Property<int>("NewHoldingId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<decimal>("Shares")
+                    b.Property<int>("OldHoldingId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("OldShares")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("OldWeight")
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("SharesChange")
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("Weight")
+                    b.Property<decimal>("WeightChange")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -161,9 +178,11 @@ namespace FundParser.Migrations
 
                     b.HasIndex("FundId");
 
-                    b.HasIndex("HoldingId");
+                    b.HasIndex("NewHoldingId");
 
-                    b.ToTable("HoldingDiffs");
+                    b.HasIndex("OldHoldingId");
+
+                    b.ToTable("HoldingDiffs", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Holding", b =>
@@ -199,9 +218,15 @@ namespace FundParser.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DAL.Models.Holding", "Holding")
+                    b.HasOne("DAL.Models.Holding", "NewHolding")
                         .WithMany()
-                        .HasForeignKey("HoldingId")
+                        .HasForeignKey("NewHoldingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DAL.Models.Holding", "OldHolding")
+                        .WithMany()
+                        .HasForeignKey("OldHoldingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -209,7 +234,9 @@ namespace FundParser.Migrations
 
                     b.Navigation("Fund");
 
-                    b.Navigation("Holding");
+                    b.Navigation("NewHolding");
+
+                    b.Navigation("OldHolding");
                 });
 
             modelBuilder.Entity("DAL.Models.Company", b =>
