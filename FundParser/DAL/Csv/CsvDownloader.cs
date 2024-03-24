@@ -8,6 +8,7 @@ namespace DAL.Csv;
 public class CsvDownloader<T> : ICsvDownloader<T>
 {
     private readonly HttpClient _client;
+    private const int ColumnCount = 8;
 
     public CsvDownloader()
     {
@@ -26,7 +27,7 @@ public class CsvDownloader<T> : ICsvDownloader<T>
             Delimiter = ",",
             BadDataFound = null,
             IgnoreBlankLines = true,
-            ShouldSkipRecord = r => r.Row.ColumnCount != 8
+            ShouldSkipRecord = r => r.Row.ColumnCount != ColumnCount
         };
         try
         {
