@@ -5,9 +5,9 @@ namespace FundParser.DAL.Models
 {
     public class HoldingDiff : BaseEntity
     {
-        public int OldHoldingId { get; set; }
+        public int? OldHoldingId { get; set; }
 
-        public int NewHoldingId { get; set; }
+        public int? NewHoldingId { get; set; }
 
         public int FundId { get; set; }
 
@@ -32,9 +32,9 @@ namespace FundParser.DAL.Models
         public virtual Company Company { get; set; }
 
         [ForeignKey(nameof(OldHoldingId))]
-        public virtual Holding OldHolding { get; set; }
+        public virtual Holding? OldHolding { get; set; }
 
         [ForeignKey(nameof(NewHoldingId))]
-        public virtual Holding NewHolding { get; set; }
+        public virtual Holding? NewHolding { get; set; }
     }
 }

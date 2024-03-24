@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace DAL.Migrations
+namespace FundParser.DAL.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -80,8 +80,8 @@ namespace DAL.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    OldHoldingId = table.Column<int>(type: "INTEGER", nullable: false),
-                    NewHoldingId = table.Column<int>(type: "INTEGER", nullable: false),
+                    OldHoldingId = table.Column<int>(type: "INTEGER", nullable: true),
+                    NewHoldingId = table.Column<int>(type: "INTEGER", nullable: true),
                     FundId = table.Column<int>(type: "INTEGER", nullable: false),
                     CompanyId = table.Column<int>(type: "INTEGER", nullable: false),
                     OldShares = table.Column<decimal>(type: "TEXT", nullable: false),
@@ -109,14 +109,12 @@ namespace DAL.Migrations
                         name: "FK_HoldingDiffs_Holdings_NewHoldingId",
                         column: x => x.NewHoldingId,
                         principalTable: "Holdings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_HoldingDiffs_Holdings_OldHoldingId",
                         column: x => x.OldHoldingId,
                         principalTable: "Holdings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.InsertData(
