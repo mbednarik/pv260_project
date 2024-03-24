@@ -19,7 +19,7 @@ public class CsvDownloader<T> : ICsvDownloader<T>
         _client.DefaultRequestHeaders.TryAddWithoutValidation("Content type", "text/csv");
     }
 
-    public async Task<IEnumerable<T>?> DownloadAndParse(string url)
+    public async Task<IEnumerable<T>?> DownloadAndParse(string url, CancellationToken cancellationToken = default)
     {
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
@@ -31,8 +31,8 @@ public class CsvDownloader<T> : ICsvDownloader<T>
         };
         try
         {
-            HttpResponseMessage response = await _client.GetAsync(new Uri(url));
-            var csvStream = await response.Content.ReadAsStreamAsync();
+            var response = await _client.GetAsync(new Uri(url), cancellationToken);
+            var csvStream = await response.Content.ReadAsStreamAsync(cancellationToken);
 
             using var reader = new StreamReader(csvStream);
             using var csvReader = new CsvReader(reader, config);

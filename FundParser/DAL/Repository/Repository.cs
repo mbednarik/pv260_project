@@ -15,9 +15,9 @@ namespace DAL.Repository
             _dbSet = _context.Set<TEntity>();
         }
 
-        public async virtual Task<TEntity> GetByID(int id)
+        public async virtual Task<TEntity> GetByID(int id, CancellationToken cancellationToken = default)
         {
-            TEntity? entity = await _dbSet.FindAsync(id);
+            TEntity? entity = await _dbSet.FindAsync([id], cancellationToken: cancellationToken);
             if (entity == null)
             {
                 throw new Exception("Entity with given Id does not exist.");
@@ -74,9 +74,9 @@ namespace DAL.Repository
             return _dbSet.AsQueryable();
         }
 
-        public async virtual Task<IEnumerable<TEntity>> GetAll()
+        public async virtual Task<IEnumerable<TEntity>> GetAll(CancellationToken cancellationToken = default)
         {
-            return await _dbSet.ToListAsync();
+            return await _dbSet.ToListAsync(cancellationToken);
         }
     }
 }

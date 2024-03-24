@@ -15,10 +15,10 @@ namespace FundParser.Controllers
             _holdingService = holdingService;
         }
 
-        [HttpGet(Name = "GetHoldings")]
-        public IActionResult GetHoldings()
+        [HttpGet(Name = nameof(GetHoldings))]
+        public IActionResult GetHoldings(CancellationToken cancellationToken)
         {
-            var data = _holdingService.GetHoldings();
+            var data = _holdingService.GetHoldings(cancellationToken);
             return new JsonResult(data);
         }
     }

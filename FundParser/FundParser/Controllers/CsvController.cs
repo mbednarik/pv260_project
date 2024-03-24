@@ -16,10 +16,10 @@ public class CsvController : ControllerBase
     }
 
     [HttpPost(Name = "csv")]
-    public async Task<IActionResult> CsvUpload()
+    public async Task<IActionResult> CsvUpload(CancellationToken cancellationToken)
     {
         // temporary endpoint to update holdings for testing purposes
-        await _fundCsvService.UpdateHoldings();
+        await _fundCsvService.UpdateHoldings(cancellationToken);
 
         return Ok();
     }

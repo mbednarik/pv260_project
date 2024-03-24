@@ -13,12 +13,11 @@ public class FundCsvService : IFundCsvService
 {
     private readonly IHoldingService _holdingService;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly CsvDownloader<FundCsvRow> _csvDownloader;
+    private readonly ICsvDownloader<FundCsvRow> _csvDownloader;
 
-    // TODO: rework this to use a single UoW, separate PR
     public FundCsvService(
         IHoldingService holdingService,
-        CsvDownloader<FundCsvRow> csvDownloader,
+        ICsvDownloader<FundCsvRow> csvDownloader,
         IUnitOfWork unitOfWork)
     {
         _holdingService = holdingService;
@@ -26,11 +25,11 @@ public class FundCsvService : IFundCsvService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<int> UpdateHoldings()
+    public async Task<int> UpdateHoldings(CancellationToken cancellationToken = default)
     {
         // TODO: move this to config
         var url = "http://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv";
-        var rows = await _csvDownloader.DownloadAndParse(url);
+        var rows = await _csvDownloader.DownloadAndParse(url, cancellationToken);
 
         if (rows == null)
         {
@@ -42,7 +41,7 @@ public class FundCsvService : IFundCsvService
         {
             try
             {
-                await ParseRow(row);
+                await ProcessRow(row, cancellationToken);
                 successfulRows++;
             }
             catch (Exception e)
@@ -54,17 +53,16 @@ public class FundCsvService : IFundCsvService
         return successfulRows;
     }
 
-    private async Task ParseRow(FundCsvRow row)
+    private async Task ProcessRow(FundCsvRow row, CancellationToken cancellationToken)
     {
         var holding = ParseFund(row);
 
-        await _holdingService.AddHolding(holding);
+        await _holdingService.AddHolding(holding, cancellationToken);
 
-        // TODO: rework this to use a single UoW, separate PR
-        await _unitOfWork.CommitAsync();
+        await _unitOfWork.CommitAsync(cancellationToken);
     }
 
-    private AddHoldingDTO ParseFund(FundCsvRow row)
+    private static AddHoldingDTO ParseFund(FundCsvRow row)
     {
         var fund = new AddFundDTO
         {

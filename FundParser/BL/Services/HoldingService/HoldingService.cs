@@ -23,20 +23,20 @@ namespace BL.Services.HoldingService
 
         }
 
-        public async Task<IEnumerable<HoldingDTO>> GetHoldings()
+        public async Task<IEnumerable<HoldingDTO>> GetHoldings(CancellationToken cancellationToken = default)
         {
-            var holdings = await _unitOfWork.HoldingRepository.GetAll();
+            var holdings = await _unitOfWork.HoldingRepository.GetAll(cancellationToken);
             return _mapper.Map<IEnumerable<HoldingDTO>>(holdings.ToList());
         }
 
-        public async Task<HoldingDTO> AddHolding(AddHoldingDTO holding)
+        public async Task<HoldingDTO> AddHolding(AddHoldingDTO holding, CancellationToken cancellationToken = default)
         {
             var existingFund = await _unitOfWork.FundRepository
                 .GetQueryable()
-                .FirstOrDefaultAsync(f => f.Name == holding.Fund.Name);
+                .FirstOrDefaultAsync(f => f.Name == holding.Fund.Name, cancellationToken);
             var existingCompany = await _unitOfWork.CompanyRepository
                 .GetQueryable()
-                .FirstOrDefaultAsync(f => f.Cusip == holding.Company.Cusip);
+                .FirstOrDefaultAsync(f => f.Cusip == holding.Company.Cusip, cancellationToken);
 
             var newHolding = _unitOfWork.HoldingRepository.Insert(new Holding
             {

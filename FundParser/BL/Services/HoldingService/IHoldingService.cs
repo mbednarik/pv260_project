@@ -4,8 +4,8 @@ namespace BL.Services.HoldingService
 {
     public interface IHoldingService
     {
-        Task<IEnumerable<HoldingDTO>> GetHoldings();
+        Task<IEnumerable<HoldingDTO>> GetHoldings(CancellationToken cancellationToken = default);
 
-        Task<HoldingDTO> AddHolding(AddHoldingDTO holding);
+        Task<HoldingDTO> AddHolding(AddHoldingDTO holding, CancellationToken cancellationToken = default);
     }
 }
