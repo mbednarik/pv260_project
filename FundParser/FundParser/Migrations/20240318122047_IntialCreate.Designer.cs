@@ -11,14 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FundParser.Migrations
 {
     [DbContext(typeof(FundParserDbContext))]
-    [Migration("20240316145455_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240318122047_IntialCreate")]
+    partial class IntialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.2");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.3");
 
             modelBuilder.Entity("DAL.Models.Company", b =>
                 {
@@ -28,6 +28,9 @@ namespace FundParser.Migrations
 
                     b.Property<string>("Cusip")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
@@ -58,6 +61,9 @@ namespace FundParser.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -84,6 +90,9 @@ namespace FundParser.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("FundId")
@@ -138,13 +147,16 @@ namespace FundParser.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("FundId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("NewHoldingId")
+                    b.Property<int?>("NewHoldingId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("OldHoldingId")
+                    b.Property<int?>("OldHoldingId")
                         .HasColumnType("INTEGER");
 
                     b.Property<decimal>("OldShares")
@@ -207,15 +219,11 @@ namespace FundParser.Migrations
 
                     b.HasOne("DAL.Models.Holding", "NewHolding")
                         .WithMany()
-                        .HasForeignKey("NewHoldingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("NewHoldingId");
 
                     b.HasOne("DAL.Models.Holding", "OldHolding")
                         .WithMany()
-                        .HasForeignKey("OldHoldingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OldHoldingId");
 
                     b.Navigation("Company");
 

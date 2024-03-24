@@ -1,5 +1,16 @@
 export type HoldingDiffsQueryParams = {
-  fundId: string;
-  oldHoldingsDate: string;
-  newHoldingsDate: string;
+	fundId: number;
+	oldHoldingDate: string;
+	newHoldingDate: string;
+};
+
+export type HoldingDiff = {
+	id: number;
+	oldShares: number;
+	sharesChange: number;
+	oldWeight: number;
+	weightChange: number;
+	fundName: string;
+	companyName: string;
+	ticker?: string;
 };

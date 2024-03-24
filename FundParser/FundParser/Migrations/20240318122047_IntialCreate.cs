@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FundParser.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class IntialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,7 +21,8 @@ namespace FundParser.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Cusip = table.Column<string>(type: "TEXT", nullable: false),
-                    Ticker = table.Column<string>(type: "TEXT", nullable: false)
+                    Ticker = table.Column<string>(type: "TEXT", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -34,7 +35,8 @@ namespace FundParser.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: false)
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -52,7 +54,8 @@ namespace FundParser.Migrations
                     CompanyId = table.Column<int>(type: "INTEGER", nullable: false),
                     Shares = table.Column<decimal>(type: "TEXT", nullable: false),
                     MarketValue = table.Column<decimal>(type: "TEXT", nullable: false),
-                    Weight = table.Column<decimal>(type: "TEXT", nullable: false)
+                    Weight = table.Column<decimal>(type: "TEXT", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -77,14 +80,15 @@ namespace FundParser.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    OldHoldingId = table.Column<int>(type: "INTEGER", nullable: false),
-                    NewHoldingId = table.Column<int>(type: "INTEGER", nullable: false),
+                    OldHoldingId = table.Column<int>(type: "INTEGER", nullable: true),
+                    NewHoldingId = table.Column<int>(type: "INTEGER", nullable: true),
                     FundId = table.Column<int>(type: "INTEGER", nullable: false),
                     CompanyId = table.Column<int>(type: "INTEGER", nullable: false),
                     OldShares = table.Column<decimal>(type: "TEXT", nullable: false),
                     SharesChange = table.Column<decimal>(type: "TEXT", nullable: false),
                     OldWeight = table.Column<decimal>(type: "TEXT", nullable: false),
-                    WeightChange = table.Column<decimal>(type: "TEXT", nullable: false)
+                    WeightChange = table.Column<decimal>(type: "TEXT", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -105,33 +109,31 @@ namespace FundParser.Migrations
                         name: "FK_HoldingDiffs_Holdings_NewHoldingId",
                         column: x => x.NewHoldingId,
                         principalTable: "Holdings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_HoldingDiffs_Holdings_OldHoldingId",
                         column: x => x.OldHoldingId,
                         principalTable: "Holdings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.InsertData(
                 table: "Companies",
-                columns: new[] { "Id", "Cusip", "Name", "Ticker" },
-                values: new object[] { 1, "CUSIP1", "Company1", "TICK1" });
+                columns: new[] { "Id", "Cusip", "DeletedAt", "Name", "Ticker" },
+                values: new object[] { 1, "CUSIP1", null, "Company1", "TICK1" });
 
             migrationBuilder.InsertData(
                 table: "Funds",
-                columns: new[] { "Id", "Name" },
-                values: new object[] { 1, "Fund1" });
+                columns: new[] { "Id", "DeletedAt", "Name" },
+                values: new object[] { 1, null, "Fund1" });
 
             migrationBuilder.InsertData(
                 table: "Holdings",
-                columns: new[] { "Id", "CompanyId", "Date", "FundId", "MarketValue", "Shares", "Weight" },
+                columns: new[] { "Id", "CompanyId", "Date", "DeletedAt", "FundId", "MarketValue", "Shares", "Weight" },
                 values: new object[,]
                 {
-                    { 1, 1, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, 50000m, 1000m, 0.05m },
-                    { 2, 1, new DateTime(2024, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, 100000m, 2000m, 0.1m }
+                    { 1, 1, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, 1, 50000m, 1000m, 0.05m },
+                    { 2, 1, new DateTime(2024, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, 1, 100000m, 2000m, 0.1m }
                 });
 
             migrationBuilder.CreateIndex(
