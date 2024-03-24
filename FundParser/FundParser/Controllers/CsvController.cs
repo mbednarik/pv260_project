@@ -21,10 +21,10 @@ public class CsvController : ControllerBase
     public async Task<IActionResult> CsvUpload()
     {
         // temporary endpoint to update holdings for testing purposes
-        await _fundCsvService.UpdateHoldings();
+        // await _fundCsvService.UpdateHoldings();
         await _holdingDiffService
-            .CalculateAndStoreHoldingDiffs(new DateTime(2024, 1, 1),
-                new DateTime(2024, 2, 1));
+            .CalculateAndStoreHoldingDiffs(new DateTime(2024, 3, 15),
+                new DateTime(2024, 3, 15));
         
         return Ok();
     }

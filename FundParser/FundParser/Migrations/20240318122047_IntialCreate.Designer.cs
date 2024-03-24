@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FundParser.Migrations
 {
     [DbContext(typeof(FundParserDbContext))]
-    [Migration("20240317001318_ChangeOldAndNewHoldingToOptional")]
-    partial class ChangeOldAndNewHoldingToOptional
+    [Migration("20240318122047_IntialCreate")]
+    partial class IntialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

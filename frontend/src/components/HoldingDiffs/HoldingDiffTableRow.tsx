@@ -23,6 +23,14 @@ const getChangeIcon = (change: number) => {
 	);
 };
 
+const getSharesChangePercentage = (oldShares: number, sharesChange: number) => {
+	if (oldShares === 0 || sharesChange === 0) {
+		return 100;
+	}
+
+	return (sharesChange / oldShares) * 100;
+};
+
 export const HoldingDiffTableRow = ({
 	holdingDiff: {
 		fundName,
@@ -33,8 +41,10 @@ export const HoldingDiffTableRow = ({
 		weightChange,
 	},
 }: HoldingDiffTableRowProps) => {
-	const sharesChangePercentage =
-		oldShares !== 0 ? (sharesChange / oldShares) * 100 : 100;
+	const sharesChangePercentage = getSharesChangePercentage(
+		oldShares,
+		sharesChange
+	);
 
 	return (
 		<Table.Tr>
@@ -44,7 +54,8 @@ export const HoldingDiffTableRow = ({
 			<Table.Td>{oldShares + sharesChange}</Table.Td>
 			<Table.Td>
 				<Flex gap="sm" align="center">
-					{sharesChangePercentage}% {getChangeIcon(sharesChange)}
+					{sharesChangePercentage}%{" "}
+					{getChangeIcon(sharesChangePercentage)}
 				</Flex>
 			</Table.Td>
 			<Table.Td>
