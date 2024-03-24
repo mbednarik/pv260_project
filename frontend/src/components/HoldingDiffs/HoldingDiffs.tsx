@@ -10,7 +10,6 @@ export const HoldingDiffs = () => {
 		newHoldingDate: "2024-03-15",
 	});
 
-	console.log(data);
 	return (
 		<Box p="xl">
 			<HoldingDiffTable holdingDiffs={data} />
