@@ -6,24 +6,25 @@ namespace DAL.UnitOfWork;
 
 public class UoWFund : IUoWFund
 {
-    public IRepository<Fund> FundRepository { get; }
     private readonly FundParserDbContext _context;
-    
+
+    public IRepository<Fund> FundRepository { get; }
+
     public UoWFund(FundParserDbContext context,
         IRepository<Fund> fundRepository)
     {
         _context = context;
         FundRepository = fundRepository;
     }
-    
+
     public void Dispose()
     {
         _context.Dispose();
     }
 
-    public async Task CommitAsync()
+    public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
 }

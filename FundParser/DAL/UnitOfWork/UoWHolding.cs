@@ -6,9 +6,9 @@ namespace DAL.UnitOfWork
 {
     public class UoWHolding : IUoWHolding
     {
-        public IRepository<Holding> HoldingRepository { get; }
-
         private readonly FundParserDbContext _context;
+
+        public IRepository<Holding> HoldingRepository { get; }
 
         public UoWHolding(FundParserDbContext context,
             IRepository<Holding> holdingRepository)
@@ -17,14 +17,14 @@ namespace DAL.UnitOfWork
             HoldingRepository = holdingRepository;
         }
 
-        public async Task CommitAsync(CancellationToken cancellationToken = default)
-        {
-            await _context.SaveChangesAsync(cancellationToken);
-        }
-
         public void Dispose()
         {
             _context.Dispose();
+        }
+
+        public async Task CommitAsync(CancellationToken cancellationToken = default)
+        {
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }

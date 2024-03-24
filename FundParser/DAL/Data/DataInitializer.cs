@@ -1,4 +1,5 @@
 ﻿using DAL.Models;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Data
@@ -23,7 +24,7 @@ namespace DAL.Data
                 MarketValue = 50000,
                 Weight = 0.05m
             };
-            
+
             var holding2 = new Holding
             {
                 Id = 2,

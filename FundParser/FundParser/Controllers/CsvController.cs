@@ -1,4 +1,5 @@
 using BL.Services.FundCsvService;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace FundParser.Controllers;
@@ -19,7 +20,7 @@ public class CsvController : ControllerBase
     {
         // temporary endpoint to update holdings for testing purposes
         await _fundCsvService.UpdateHoldings();
-        
+
         return Ok();
     }
 }

@@ -1,18 +1,19 @@
 ﻿using DAL.Models;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repository
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEntity
     {
-        internal FundParserDbContext context;
+        private FundParserDbContext context;
 
-        internal DbSet<TEntity> dbSet;
+        private DbSet<TEntity> dbSet;
 
         public Repository(FundParserDbContext dbcontext)
         {
-            this.context = dbcontext;
-            this.dbSet = context.Set<TEntity>();
+            context = dbcontext;
+            dbSet = context.Set<TEntity>();
         }
 
         public async virtual Task<TEntity> GetByID(int id)
@@ -22,6 +23,7 @@ namespace DAL.Repository
             {
                 throw new Exception("Entity with given Id does not exist.");
             }
+
             return entity;
         }
 
@@ -31,6 +33,7 @@ namespace DAL.Repository
             {
                 throw new Exception("Argument entity is null");
             }
+
             var result = dbSet.Add(entity);
             return result.Entity;
         }
@@ -42,6 +45,7 @@ namespace DAL.Repository
             {
                 throw new Exception("Entity with given Id does not exist.");
             }
+
             dbSet.Remove(entityToDelete);
         }
 
@@ -51,6 +55,7 @@ namespace DAL.Repository
             {
                 dbSet.Attach(entityToDelete);
             }
+
             dbSet.Remove(entityToDelete);
         }
 

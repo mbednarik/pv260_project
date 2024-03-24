@@ -6,9 +6,9 @@ namespace DAL.UnitOfWork
 {
     public class UoWHoldingDiff : IUoWHoldingDiff
     {
-        public IRepository<HoldingDiff> HoldingDiffRepository { get; }
-
         private readonly FundParserDbContext context;
+
+        public IRepository<HoldingDiff> HoldingDiffRepository { get; }
 
         public UoWHoldingDiff(FundParserDbContext context,
             IRepository<HoldingDiff> holdingDiffRepository)
@@ -17,14 +17,14 @@ namespace DAL.UnitOfWork
             HoldingDiffRepository = holdingDiffRepository;
         }
 
-        public async Task CommitAsync(CancellationToken cancellationToken = default)
-        {
-            await context.SaveChangesAsync(cancellationToken);
-        }
-
         public void Dispose()
         {
             context.Dispose();
+        }
+
+        public async Task CommitAsync(CancellationToken cancellationToken = default)
+        {
+            await context.SaveChangesAsync(cancellationToken);
         }
     }
 }
