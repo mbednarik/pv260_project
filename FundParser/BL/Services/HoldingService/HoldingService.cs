@@ -3,7 +3,7 @@
 using BL.DTOs;
 
 using DAL.Models;
-using DAL.UnitOfWork.Interface;
+using DAL.UnitOfWork;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -11,40 +11,34 @@ namespace BL.Services.HoldingService
 {
     public class HoldingService : IHoldingService
     {
-        private readonly IUoWHolding _uowHolding;
-        private readonly IUoWFund _uowFund;
-        private readonly IUoWCompany _uowWCompany;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
         public HoldingService(
-            IUoWHolding uowHolding,
-            IUoWFund uowFund,
-            IUoWCompany uowWCompany,
+            IUnitOfWork unitOfWork,
             IMapper mapper)
         {
-            _uowHolding = uowHolding;
-            _uowFund = uowFund;
-            _uowWCompany = uowWCompany;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
 
         }
 
         public async Task<IEnumerable<HoldingDTO>> GetHoldings()
         {
-            var holdings = await _uowHolding.HoldingRepository.GetAll();
+            var holdings = await _unitOfWork.HoldingRepository.GetAll();
             return _mapper.Map<IEnumerable<HoldingDTO>>(holdings.ToList());
         }
 
         public async Task<HoldingDTO> AddHolding(AddHoldingDTO holding)
         {
-            var existingFund = await _uowFund.FundRepository
+            var existingFund = await _unitOfWork.FundRepository
                 .GetQueryable()
                 .FirstOrDefaultAsync(f => f.Name == holding.Fund.Name);
-            var existingCompany = await _uowWCompany.CompanyRepository
+            var existingCompany = await _unitOfWork.CompanyRepository
                 .GetQueryable()
                 .FirstOrDefaultAsync(f => f.Cusip == holding.Company.Cusip);
 
-            var newHolding = _uowHolding.HoldingRepository.Insert(new Holding
+            var newHolding = _unitOfWork.HoldingRepository.Insert(new Holding
             {
                 Fund = existingFund ?? _mapper.Map<Fund>(holding.Fund),
                 Company = existingCompany ?? _mapper.Map<Company>(holding.Company),

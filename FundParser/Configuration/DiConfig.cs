@@ -8,7 +8,6 @@ using DAL.Csv;
 using DAL.Models;
 using DAL.Repository;
 using DAL.UnitOfWork;
-using DAL.UnitOfWork.Interface;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -28,10 +27,7 @@ namespace Configuration
             services.AddScoped<IRepository<HoldingDiff>, Repository<HoldingDiff>>();
 
             // UnitOfWork DI Setup
-            services.AddScoped<IUoWHolding, UoWHolding>();
-            services.AddScoped<IUoWFund, UoWFund>();
-            services.AddScoped<IUoWCompany, UoWCompany>();
-            services.AddScoped<IUoWHoldingDiff, UoWHoldingDiff>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             //Services DI Setup
             services.AddScoped<IHoldingService, HoldingService>();

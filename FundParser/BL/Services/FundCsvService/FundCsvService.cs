@@ -5,25 +5,25 @@ using BL.Services.HoldingService;
 
 using DAL.Csv;
 using DAL.Models;
-using DAL.UnitOfWork.Interface;
+using DAL.UnitOfWork;
 
 namespace BL.Services.FundCsvService;
 
 public class FundCsvService : IFundCsvService
 {
     private readonly IHoldingService _holdingService;
-    private readonly IUoWHolding _uowHolding;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly CsvDownloader<FundCsvRow> _csvDownloader;
 
     // TODO: rework this to use a single UoW, separate PR
     public FundCsvService(
         IHoldingService holdingService,
         CsvDownloader<FundCsvRow> csvDownloader,
-        IUoWHolding uowHolding)
+        IUnitOfWork unitOfWork)
     {
         _holdingService = holdingService;
         _csvDownloader = csvDownloader;
-        _uowHolding = uowHolding;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<int> UpdateHoldings()
@@ -61,7 +61,7 @@ public class FundCsvService : IFundCsvService
         await _holdingService.AddHolding(holding);
 
         // TODO: rework this to use a single UoW, separate PR
-        await _uowHolding.CommitAsync();
+        await _unitOfWork.CommitAsync();
     }
 
     private AddHoldingDTO ParseFund(FundCsvRow row)

@@ -1,7 +1,7 @@
 ﻿using BL.DTOs;
 
 using DAL.Models;
-using DAL.UnitOfWork.Interface;
+using DAL.UnitOfWork;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -9,18 +9,16 @@ namespace BL.Services.HoldingDiffService
 {
     public class HoldingDiffService : IHoldingDiffService
     {
-        private readonly IUoWHoldingDiff uoWHoldingDiff;
-        private readonly IUoWHolding uoWHolding;
+        private readonly IUnitOfWork unitOfWork;
 
-        public HoldingDiffService(IUoWHoldingDiff uoWHoldingDiff, IUoWHolding uoWHolding)
+        public HoldingDiffService(IUnitOfWork unitOfWork)
         {
-            this.uoWHoldingDiff = uoWHoldingDiff;
-            this.uoWHolding = uoWHolding;
+            this.unitOfWork = unitOfWork;
         }
 
         public async Task<IEnumerable<HoldingDiffDTO>> GetHoldingDiffs(int fundId, DateTime oldHoldingDate, DateTime newHoldingDate, CancellationToken cancellationToken = default)
         {
-            return await uoWHoldingDiff.HoldingDiffRepository
+            return await unitOfWork.HoldingDiffRepository
                 .GetQueryable()
                 .Where(hd => hd.FundId == fundId)
                 .Where(hd =>
@@ -43,19 +41,19 @@ namespace BL.Services.HoldingDiffService
 
         public async Task CalculateAndStoreHoldingDiffs(DateTime oldHoldingsDate, DateTime newHoldingsDate, CancellationToken cancellationToken = default)
         {
-            var oldHoldings = uoWHolding.HoldingRepository.GetQueryable()
+            var oldHoldings = unitOfWork.HoldingRepository.GetQueryable()
                 .Where(h => h.Date == oldHoldingsDate);
-            var newHoldings = uoWHolding.HoldingRepository.GetQueryable()
+            var newHoldings = unitOfWork.HoldingRepository.GetQueryable()
                 .Where(h => h.Date == newHoldingsDate);
 
             var holdingDiffs = CompareHoldings(oldHoldings, newHoldings).ToList();
 
             foreach (var holdingDiff in holdingDiffs)
             {
-                uoWHoldingDiff.HoldingDiffRepository.Insert(holdingDiff);
+                unitOfWork.HoldingDiffRepository.Insert(holdingDiff);
             }
 
-            await uoWHoldingDiff.CommitAsync(cancellationToken);
+            await unitOfWork.CommitAsync(cancellationToken);
         }
 
         private static IEnumerable<HoldingDiff> CompareHoldings(IEnumerable<Holding> oldHoldings, IEnumerable<Holding> newHoldings)
