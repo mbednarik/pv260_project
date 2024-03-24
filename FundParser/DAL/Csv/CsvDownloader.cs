@@ -7,8 +7,8 @@ namespace DAL.Csv;
 
 public class CsvDownloader<T> : ICsvDownloader<T>
 {
-    private readonly HttpClient _client;
     private const int ColumnCount = 8;
+    private readonly HttpClient _client;
 
     public CsvDownloader()
     {

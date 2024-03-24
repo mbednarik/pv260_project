@@ -9,16 +9,16 @@ namespace BL.Services.HoldingDiffService
 {
     public class HoldingDiffService : IHoldingDiffService
     {
-        private readonly IUnitOfWork unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         public HoldingDiffService(IUnitOfWork unitOfWork)
         {
-            this.unitOfWork = unitOfWork;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<IEnumerable<HoldingDiffDTO>> GetHoldingDiffs(int fundId, DateTime oldHoldingDate, DateTime newHoldingDate, CancellationToken cancellationToken = default)
         {
-            return await unitOfWork.HoldingDiffRepository
+            return await _unitOfWork.HoldingDiffRepository
                 .GetQueryable()
                 .Where(hd => hd.FundId == fundId)
                 .Where(hd =>
@@ -41,19 +41,19 @@ namespace BL.Services.HoldingDiffService
 
         public async Task CalculateAndStoreHoldingDiffs(DateTime oldHoldingsDate, DateTime newHoldingsDate, CancellationToken cancellationToken = default)
         {
-            var oldHoldings = unitOfWork.HoldingRepository.GetQueryable()
+            var oldHoldings = _unitOfWork.HoldingRepository.GetQueryable()
                 .Where(h => h.Date == oldHoldingsDate);
-            var newHoldings = unitOfWork.HoldingRepository.GetQueryable()
+            var newHoldings = _unitOfWork.HoldingRepository.GetQueryable()
                 .Where(h => h.Date == newHoldingsDate);
 
             var holdingDiffs = CompareHoldings(oldHoldings, newHoldings).ToList();
 
             foreach (var holdingDiff in holdingDiffs)
             {
-                unitOfWork.HoldingDiffRepository.Insert(holdingDiff);
+                _unitOfWork.HoldingDiffRepository.Insert(holdingDiff);
             }
 
-            await unitOfWork.CommitAsync(cancellationToken);
+            await _unitOfWork.CommitAsync(cancellationToken);
         }
 
         private static IEnumerable<HoldingDiff> CompareHoldings(IEnumerable<Holding> oldHoldings, IEnumerable<Holding> newHoldings)
