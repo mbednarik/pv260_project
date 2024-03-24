@@ -1,8 +1,8 @@
-﻿using DAL.Models;
+﻿using FundParser.DAL.Models;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace DAL.Data
+namespace FundParser.DAL.Data
 {
     internal static class DataInitializer
     {

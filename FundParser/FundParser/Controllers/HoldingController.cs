@@ -1,8 +1,8 @@
-using BL.Services.HoldingService;
+using FundParser.BL.Services.HoldingService;
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace FundParser.Controllers
+namespace FundParser.App.Controllers
 {
     [ApiController]
     [Route("[controller]")]

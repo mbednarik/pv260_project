@@ -1,4 +1,4 @@
-namespace BL.DTOs;
+namespace FundParser.BL.DTOs;
 
 public class AddHoldingDTO
 {

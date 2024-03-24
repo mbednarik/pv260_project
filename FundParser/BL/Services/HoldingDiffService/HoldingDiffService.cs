@@ -1,11 +1,10 @@
-﻿using BL.DTOs;
-
-using DAL.Models;
-using DAL.UnitOfWork;
+﻿using FundParser.BL.DTOs;
+using FundParser.DAL.Models;
+using FundParser.DAL.UnitOfWork;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace BL.Services.HoldingDiffService
+namespace FundParser.BL.Services.HoldingDiffService
 {
     public class HoldingDiffService : IHoldingDiffService
     {
@@ -22,9 +21,9 @@ namespace BL.Services.HoldingDiffService
                 .GetQueryable()
                 .Where(hd => hd.FundId == fundId)
                 .Where(hd =>
-                    (hd.OldHolding == null && hd.NewHolding != null && hd.NewHolding.Date == newHoldingDate) ||
-                    (hd.NewHolding == null && hd.OldHolding != null && hd.OldHolding.Date == oldHoldingDate) ||
-                    (hd.OldHolding != null && hd.NewHolding != null && hd.OldHolding.Date == oldHoldingDate && hd.NewHolding.Date == newHoldingDate))
+                    hd.OldHolding == null && hd.NewHolding != null && hd.NewHolding.Date == newHoldingDate ||
+                    hd.NewHolding == null && hd.OldHolding != null && hd.OldHolding.Date == oldHoldingDate ||
+                    hd.OldHolding != null && hd.NewHolding != null && hd.OldHolding.Date == oldHoldingDate && hd.NewHolding.Date == newHoldingDate)
                 .Select(hd => new HoldingDiffDTO
                 {
                     Id = hd.Id,

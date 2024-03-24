@@ -1,6 +1,6 @@
-﻿using BL.DTOs;
+﻿using FundParser.BL.DTOs;
 
-namespace BL.Services.HoldingService
+namespace FundParser.BL.Services.HoldingService
 {
     public interface IHoldingService
     {

@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
 
-using BL.DTOs;
+using FundParser.BL.DTOs;
+using FundParser.DAL.Models;
 
-using DAL.Models;
-
-namespace Configuration
+namespace FundParser.Configuration
 {
     public class MapperConfig
     {

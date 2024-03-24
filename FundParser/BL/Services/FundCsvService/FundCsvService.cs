@@ -1,13 +1,12 @@
 using System.Globalization;
 
-using BL.DTOs;
-using BL.Services.HoldingService;
+using FundParser.BL.DTOs;
+using FundParser.BL.Services.HoldingService;
+using FundParser.DAL.Csv;
+using FundParser.DAL.Models;
+using FundParser.DAL.UnitOfWork;
 
-using DAL.Csv;
-using DAL.Models;
-using DAL.UnitOfWork;
-
-namespace BL.Services.FundCsvService;
+namespace FundParser.BL.Services.FundCsvService;
 
 public class FundCsvService : IFundCsvService
 {

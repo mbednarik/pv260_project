@@ -3,7 +3,7 @@ using System.Globalization;
 using CsvHelper;
 using CsvHelper.Configuration;
 
-namespace DAL.Csv;
+namespace FundParser.DAL.Csv;
 
 public class CsvDownloader<T> : ICsvDownloader<T>
 {

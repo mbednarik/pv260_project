@@ -1,4 +1,4 @@
-namespace BL.Services.FundCsvService;
+namespace FundParser.BL.Services.FundCsvService;
 
 public interface IFundCsvService
 {

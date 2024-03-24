@@ -1,4 +1,4 @@
-namespace DAL.Csv
+namespace FundParser.DAL.Csv
 {
     public interface ICsvDownloader<T>
     {

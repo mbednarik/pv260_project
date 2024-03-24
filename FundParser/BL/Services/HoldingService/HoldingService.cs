@@ -1,13 +1,12 @@
 ﻿using AutoMapper;
 
-using BL.DTOs;
-
-using DAL.Models;
-using DAL.UnitOfWork;
+using FundParser.BL.DTOs;
+using FundParser.DAL.Models;
+using FundParser.DAL.UnitOfWork;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace BL.Services.HoldingService
+namespace FundParser.BL.Services.HoldingService
 {
     public class HoldingService : IHoldingService
     {

@@ -1,10 +1,10 @@
-﻿using DAL;
+﻿using FundParser.DAL;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Configuration
+namespace FundParser.Configuration
 {
     public class DatabaseConfig
     {

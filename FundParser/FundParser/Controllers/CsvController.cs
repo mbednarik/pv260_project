@@ -1,8 +1,8 @@
-using BL.Services.FundCsvService;
+using FundParser.BL.Services.FundCsvService;
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace FundParser.Controllers;
+namespace FundParser.App.Controllers;
 
 [ApiController]
 [Route("[controller]")]

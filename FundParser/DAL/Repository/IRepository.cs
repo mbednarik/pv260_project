@@ -1,6 +1,6 @@
-﻿using DAL.Models;
+﻿using FundParser.DAL.Models;
 
-namespace DAL.Repository
+namespace FundParser.DAL.Repository
 {
     public interface IRepository<TEntity> where TEntity : BaseEntity
     {

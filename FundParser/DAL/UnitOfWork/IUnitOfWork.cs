@@ -1,7 +1,7 @@
-﻿using DAL.Models;
-using DAL.Repository;
+﻿using FundParser.DAL.Models;
+using FundParser.DAL.Repository;
 
-namespace DAL.UnitOfWork
+namespace FundParser.DAL.UnitOfWork
 {
     public interface IUnitOfWork : IDisposable
     {

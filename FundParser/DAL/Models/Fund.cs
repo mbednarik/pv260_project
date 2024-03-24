@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace DAL.Models
+namespace FundParser.DAL.Models
 {
     public class Fund : BaseEntity
     {

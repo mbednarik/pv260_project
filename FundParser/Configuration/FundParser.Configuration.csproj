@@ -12,8 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BL\BL.csproj" />
-    <ProjectReference Include="..\DAL\DAL.csproj" />
+    <ProjectReference Include="..\BL\FundParser.BL.csproj" />
+    <ProjectReference Include="..\DAL\FundParser.DAL.csproj" />
   </ItemGroup>
 
 </Project>

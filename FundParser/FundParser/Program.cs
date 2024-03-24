@@ -1,4 +1,4 @@
-using Configuration;
+using FundParser.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 

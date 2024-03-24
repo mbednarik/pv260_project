@@ -1,8 +1,8 @@
-﻿using DAL.Models;
+﻿using FundParser.DAL.Models;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace DAL.Repository
+namespace FundParser.DAL.Repository
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEntity
     {

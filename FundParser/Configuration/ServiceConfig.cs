@@ -1,17 +1,16 @@
 using AutoMapper;
 
-using BL.Services.FundCsvService;
-using BL.Services.HoldingDiffService;
-using BL.Services.HoldingService;
-
-using DAL.Csv;
-using DAL.Models;
-using DAL.Repository;
-using DAL.UnitOfWork;
+using FundParser.BL.Services.FundCsvService;
+using FundParser.BL.Services.HoldingDiffService;
+using FundParser.BL.Services.HoldingService;
+using FundParser.DAL.Csv;
+using FundParser.DAL.Models;
+using FundParser.DAL.Repository;
+using FundParser.DAL.UnitOfWork;
 
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Configuration
+namespace FundParser.Configuration
 {
     public class ServiceConfig
     {

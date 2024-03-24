@@ -1,6 +1,6 @@
 using CsvHelper.Configuration.Attributes;
 
-namespace DAL.Models;
+namespace FundParser.DAL.Models;
 
 public class FundCsvRow
 {

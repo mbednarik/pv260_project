@@ -1,10 +1,10 @@
-﻿using DAL.Data;
-using DAL.Models;
+﻿using FundParser.DAL.Data;
+using FundParser.DAL.Models;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace DAL
+namespace FundParser.DAL
 {
     public class FundParserDbContext : DbContext
     {

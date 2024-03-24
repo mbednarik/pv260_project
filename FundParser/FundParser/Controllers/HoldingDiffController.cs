@@ -1,9 +1,9 @@
-﻿using BL.DTOs;
-using BL.Services.HoldingDiffService;
+﻿using FundParser.BL.DTOs;
+using FundParser.BL.Services.HoldingDiffService;
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace FundParser.Controllers
+namespace FundParser.App.Controllers
 {
     [ApiController]
     [Route("[controller]")]
