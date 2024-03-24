@@ -3,6 +3,7 @@ using System;
 using FundParser.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FundParser.DAL.Migrations
 {
     [DbContext(typeof(FundParserDbContext))]
-    partial class FundParserDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240324214925_AddDatesToHoldingDiff")]
+    partial class AddDatesToHoldingDiff
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.3");
@@ -40,7 +43,7 @@ namespace FundParser.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Companies", (string)null);
+                    b.ToTable("Companies");
 
                     b.HasData(
                         new
@@ -67,7 +70,7 @@ namespace FundParser.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Funds", (string)null);
+                    b.ToTable("Funds");
 
                     b.HasData(
                         new
@@ -110,7 +113,7 @@ namespace FundParser.DAL.Migrations
 
                     b.HasIndex("FundId");
 
-                    b.ToTable("Holdings", (string)null);
+                    b.ToTable("Holdings");
 
                     b.HasData(
                         new
@@ -184,7 +187,7 @@ namespace FundParser.DAL.Migrations
 
                     b.HasIndex("OldHoldingId");
 
-                    b.ToTable("HoldingDiffs", (string)null);
+                    b.ToTable("HoldingDiffs");
                 });
 
             modelBuilder.Entity("FundParser.DAL.Models.Holding", b =>
