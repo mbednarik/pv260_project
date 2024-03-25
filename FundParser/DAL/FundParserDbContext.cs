@@ -32,7 +32,6 @@ namespace FundParser.DAL
                 .AddJsonFile("dataAppsettings.json")
                 .Build();
             return new DbContextOptionsBuilder()
-                .UseLazyLoadingProxies()
                 .EnableSensitiveDataLogging()
                 .UseSqlite(configuration.GetConnectionString("DbName")).Options;
         }
@@ -40,6 +39,10 @@ namespace FundParser.DAL
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Seed();
+
+            modelBuilder.Entity<Holding>().Navigation(h => h.Fund).AutoInclude();
+            modelBuilder.Entity<Holding>().Navigation(h => h.Company).AutoInclude();
+
             base.OnModelCreating(modelBuilder);
         }
     }

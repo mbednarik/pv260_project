@@ -17,35 +17,46 @@ namespace FundParser.BL.Services.HoldingDiffService
 
         public async Task<IEnumerable<HoldingDiffDTO>> GetHoldingDiffs(int fundId, DateTime oldHoldingDate, DateTime newHoldingDate, CancellationToken cancellationToken = default)
         {
-            return await _unitOfWork.HoldingDiffRepository
-                .GetQueryable()
+            var areHoldingDiffsCalculated = await _unitOfWork.HoldingDiffRepository.GetQueryable()
+                .AnyAsync(hd =>
+                    hd.FundId == fundId &&
+                    hd.OldHoldingDate == oldHoldingDate &&
+                    hd.NewHoldingDate == newHoldingDate,
+                    cancellationToken);
+
+            if (!areHoldingDiffsCalculated)
+            {
+                return await CalculateAndStoreHoldingDiffs(fundId, oldHoldingDate, newHoldingDate, cancellationToken);
+            }
+
+            return await _unitOfWork.HoldingDiffRepository.GetQueryable()
                 .Where(hd => hd.FundId == fundId)
                 .Where(hd =>
                     hd.OldHolding == null && hd.NewHolding != null && hd.NewHolding.Date == newHoldingDate ||
                     hd.NewHolding == null && hd.OldHolding != null && hd.OldHolding.Date == oldHoldingDate ||
                     hd.OldHolding != null && hd.NewHolding != null && hd.OldHolding.Date == oldHoldingDate && hd.NewHolding.Date == newHoldingDate)
-                .Select(hd => new HoldingDiffDTO
-                {
-                    Id = hd.Id,
-                    FundName = hd.Fund.Name,
-                    CompanyName = hd.Company.Name,
-                    Ticker = hd.Company.Ticker,
-                    OldShares = hd.OldShares,
-                    SharesChange = hd.SharesChange,
-                    OldWeight = hd.OldWeight,
-                    WeightChange = hd.WeightChange
-                })
+                .Select(hd => GetHoldingDiffDTO(hd))
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task CalculateAndStoreHoldingDiffs(DateTime oldHoldingsDate, DateTime newHoldingsDate, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<HoldingDiffDTO>> CalculateAndStoreHoldingDiffs(int fundId, DateTime oldHoldingsDate, DateTime newHoldingsDate, CancellationToken cancellationToken = default)
         {
             var oldHoldings = _unitOfWork.HoldingRepository.GetQueryable()
+                .Where(h => h.FundId == fundId)
                 .Where(h => h.Date == oldHoldingsDate);
             var newHoldings = _unitOfWork.HoldingRepository.GetQueryable()
+                .Where(h => h.FundId == fundId)
                 .Where(h => h.Date == newHoldingsDate);
 
-            var holdingDiffs = CompareHoldings(oldHoldings, newHoldings).ToList();
+            var holdingDiffs = CompareHoldings(oldHoldings, newHoldings)
+                .Select(hd =>
+                {
+                    hd.OldHoldingDate = oldHoldingsDate;
+                    hd.NewHoldingDate = newHoldingsDate;
+
+                    return hd;
+                })
+                .ToList();
 
             foreach (var holdingDiff in holdingDiffs)
             {
@@ -53,6 +64,8 @@ namespace FundParser.BL.Services.HoldingDiffService
             }
 
             await _unitOfWork.CommitAsync(cancellationToken);
+
+            return holdingDiffs.Select(GetHoldingDiffDTO);
         }
 
         private static IEnumerable<HoldingDiff> CompareHoldings(IEnumerable<Holding> oldHoldings, IEnumerable<Holding> newHoldings)
@@ -117,6 +130,21 @@ namespace FundParser.BL.Services.HoldingDiffService
                 SharesChange = newHolding.Shares - oldHolding.Shares,
                 OldWeight = oldHolding.Weight,
                 WeightChange = newHolding.Weight - oldHolding.Weight
+            };
+        }
+
+        private static HoldingDiffDTO GetHoldingDiffDTO(HoldingDiff hd)
+        {
+            return new HoldingDiffDTO
+            {
+                Id = hd.Id,
+                FundName = hd.Fund.Name,
+                CompanyName = hd.Company.Name,
+                Ticker = hd.Company.Ticker,
+                OldShares = hd.OldShares,
+                SharesChange = hd.SharesChange,
+                OldWeight = hd.OldWeight,
+                WeightChange = hd.WeightChange
             };
         }
     }

@@ -5,13 +5,17 @@ namespace FundParser.DAL.Models
 {
     public class HoldingDiff : BaseEntity
     {
+        public int FundId { get; set; }
+
+        public int CompanyId { get; set; }
+
         public int? OldHoldingId { get; set; }
 
         public int? NewHoldingId { get; set; }
 
-        public int FundId { get; set; }
+        public DateTime OldHoldingDate { get; set; }
 
-        public int CompanyId { get; set; }
+        public DateTime NewHoldingDate { get; set; }
 
         [Required]
         public decimal OldShares { get; set; }
