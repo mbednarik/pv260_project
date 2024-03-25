@@ -1,4 +1,6 @@
 using FundParser.Configuration;
+using FundParser.DAL;
+using Microsoft.EntityFrameworkCore;
 
 var customAllowSpecificOrigins = "_customAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
@@ -18,8 +20,12 @@ builder.Services.AddCors(options =>
         });
 });
 
-ServiceConfig.ConfigureDependencyInjection(builder.Services);
-DatabaseConfig.ConfigureDbContext(builder.Services, builder.Configuration);
+builder.Services.AddDbContext<FundParserDbContext>(options =>
+{
+    options.EnableSensitiveDataLogging();
+});
+
+builder.Services.ConfigureDependencyInjection();
 
 var app = builder.Build();
 

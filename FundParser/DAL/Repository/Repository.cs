@@ -15,7 +15,7 @@ namespace FundParser.DAL.Repository
             _dbSet = _context.Set<TEntity>();
         }
 
-        public async virtual Task<TEntity> GetByID(int id, CancellationToken cancellationToken = default)
+        public async virtual Task<TEntity> GetByIDAsync(int id, CancellationToken cancellationToken = default)
         {
             TEntity? entity = await _dbSet.FindAsync([id], cancellationToken: cancellationToken);
             if (entity == null)
@@ -35,6 +35,16 @@ namespace FundParser.DAL.Repository
 
             var result = _dbSet.Add(entity);
             return result.Entity;
+        }
+
+        public virtual async Task<TEntity> InsertAsync(TEntity entity, CancellationToken cancellationToken = default)
+        {
+            if (entity == null)
+            {
+                throw new Exception("Argument entity is null");
+            }
+
+            return (await _dbSet.AddAsync(entity, cancellationToken)).Entity;
         }
 
         public virtual void Delete(int id)
@@ -74,7 +84,7 @@ namespace FundParser.DAL.Repository
             return _dbSet.AsQueryable();
         }
 
-        public async virtual Task<IEnumerable<TEntity>> GetAll(CancellationToken cancellationToken = default)
+        public async virtual Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await _dbSet.ToListAsync(cancellationToken);
         }

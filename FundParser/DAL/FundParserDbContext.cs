@@ -16,7 +16,7 @@ namespace FundParser.DAL
 
         public DbSet<HoldingDiff> HoldingDiffs { get; set; }
 
-        public FundParserDbContext() : base(Init())
+        public FundParserDbContext() : base()
         {
         }
 
@@ -25,15 +25,13 @@ namespace FundParser.DAL
         {
         }
 
-        public static DbContextOptions Init()
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                 .AddJsonFile("dataAppsettings.json")
                 .Build();
-            return new DbContextOptionsBuilder()
-                .EnableSensitiveDataLogging()
-                .UseSqlite(configuration.GetConnectionString("DbName")).Options;
+            optionsBuilder.UseSqlite(configuration.GetConnectionString("SqlLite"));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

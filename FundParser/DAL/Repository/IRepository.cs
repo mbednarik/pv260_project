@@ -4,13 +4,15 @@ namespace FundParser.DAL.Repository
 {
     public interface IRepository<TEntity> where TEntity : BaseEntity
     {
-        Task<TEntity> GetByID(int id, CancellationToken cancellationToken = default);
+        Task<TEntity> GetByIDAsync(int id, CancellationToken cancellationToken = default);
 
         IQueryable<TEntity> GetQueryable();
 
-        Task<IEnumerable<TEntity>> GetAll(CancellationToken cancellationToken = default);
+        Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default);
 
         TEntity Insert(TEntity entity);
+
+        Task<TEntity> InsertAsync(TEntity entity, CancellationToken cancellationToken = default);
 
         void Delete(int id);
 

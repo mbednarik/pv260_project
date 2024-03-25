@@ -1,12 +1,5 @@
 {
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
-  "AllowedHosts": "*",
   "ConnectionStrings": {
-    "DbName": "FundParser"
+    "SqlLite": "Data Source=./FundParser.sqlite"
   }
 }

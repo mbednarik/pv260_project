@@ -24,7 +24,7 @@ namespace FundParser.BL.Services.HoldingService
 
         public async Task<IEnumerable<HoldingDTO>> GetHoldings(CancellationToken cancellationToken = default)
         {
-            var holdings = await _unitOfWork.HoldingRepository.GetAll(cancellationToken);
+            var holdings = await _unitOfWork.HoldingRepository.GetAllAsync(cancellationToken);
             return _mapper.Map<IEnumerable<HoldingDTO>>(holdings.ToList());
         }
 
