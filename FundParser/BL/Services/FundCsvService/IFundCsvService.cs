@@ -1,6 +1,6 @@
-namespace BL.Services.FundCsvService;
+namespace FundParser.BL.Services.FundCsvService;
 
 public interface IFundCsvService
 {
-    Task<int> UpdateHoldings();
+    Task<int> UpdateHoldings(CancellationToken cancellationToken = default);
 }

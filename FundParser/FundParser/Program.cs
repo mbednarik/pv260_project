@@ -1,6 +1,6 @@
-using Configuration;
+using FundParser.Configuration;
 
-var  customAllowSpecificOrigins = "_customAllowSpecificOrigins";
+var customAllowSpecificOrigins = "_customAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
@@ -10,7 +10,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: customAllowSpecificOrigins,
-        policy  =>
+        policy =>
         {
             policy.WithOrigins("http://localhost:5173")
                 .AllowAnyHeader()
@@ -18,8 +18,8 @@ builder.Services.AddCors(options =>
         });
 });
 
-DiConfig.ConfigureDi(builder.Services);
-SetupServices.AddServices(builder.Services, builder.Configuration);
+ServiceConfig.ConfigureDependencyInjection(builder.Services);
+DatabaseConfig.ConfigureDbContext(builder.Services, builder.Configuration);
 
 var app = builder.Build();
 

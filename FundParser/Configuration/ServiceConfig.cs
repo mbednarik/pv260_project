@@ -1,25 +1,23 @@
 using AutoMapper;
 
-using BL.Services.FundCsvService;
-using BL.Services.HoldingDiffService;
-using BL.Services.HoldingService;
-
-using DAL.Csv;
-using DAL.Models;
-using DAL.Repository;
-using DAL.UnitOfWork;
-using DAL.UnitOfWork.Interface;
+using FundParser.BL.Services.FundCsvService;
+using FundParser.BL.Services.HoldingDiffService;
+using FundParser.BL.Services.HoldingService;
+using FundParser.DAL.Csv;
+using FundParser.DAL.Models;
+using FundParser.DAL.Repository;
+using FundParser.DAL.UnitOfWork;
 
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Configuration
+namespace FundParser.Configuration
 {
-    public class DiConfig
+    public class ServiceConfig
     {
-        public static void ConfigureDi(IServiceCollection services)
+        public static void ConfigureDependencyInjection(IServiceCollection services)
         {
             // Mapping DI Setup
-            services.AddSingleton<IMapper>(new Mapper(new MapperConfiguration(MappingConfig.ConfigureMapping)));
+            services.AddSingleton<IMapper>(new Mapper(new MapperConfiguration(MapperConfig.ConfigureMapper)));
 
             //Repository DI Setup
             services.AddScoped<IRepository<Holding>, Repository<Holding>>();
@@ -28,16 +26,13 @@ namespace Configuration
             services.AddScoped<IRepository<HoldingDiff>, Repository<HoldingDiff>>();
 
             // UnitOfWork DI Setup
-            services.AddScoped<IUoWHolding, UoWHolding>();
-            services.AddScoped<IUoWFund, UoWFund>();
-            services.AddScoped<IUoWCompany, UoWCompany>();
-            services.AddScoped<IUoWHoldingDiff, UoWHoldingDiff>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             //Services DI Setup
             services.AddScoped<IHoldingService, HoldingService>();
             services.AddScoped<IFundCsvService, FundCsvService>();
 
-            services.AddScoped<CsvDownloader<FundCsvRow>>();
+            services.AddScoped<ICsvDownloader<FundCsvRow>, CsvDownloader<FundCsvRow>>();
             services.AddScoped<IHoldingDiffService, HoldingDiffService>();
         }
     }

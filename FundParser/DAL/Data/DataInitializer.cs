@@ -1,9 +1,10 @@
-﻿using DAL.Models;
+﻿using FundParser.DAL.Models;
+
 using Microsoft.EntityFrameworkCore;
 
-namespace DAL.Data
+namespace FundParser.DAL.Data
 {
-    public static class DataInitializer
+    internal static class DataInitializer
     {
         public static void Seed(this ModelBuilder modelBuilder)
         {
@@ -23,7 +24,7 @@ namespace DAL.Data
                 MarketValue = 50000,
                 Weight = 0.05m
             };
-            
+
             var holding2 = new Holding
             {
                 Id = 2,

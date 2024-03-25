@@ -1,9 +1,10 @@
-﻿using DAL.Data;
-using DAL.Models;
+﻿using FundParser.DAL.Data;
+using FundParser.DAL.Models;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
-namespace DAL
+namespace FundParser.DAL
 {
     public class FundParserDbContext : DbContext
     {
@@ -26,9 +27,14 @@ namespace DAL
 
         public static DbContextOptions Init()
         {
-            return new DbContextOptionsBuilder<FundParserDbContext>()
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("dataAppsettings.json")
+                .Build();
+            return new DbContextOptionsBuilder()
                 .UseLazyLoadingProxies()
-                .Options;
+                .EnableSensitiveDataLogging()
+                .UseSqlite(configuration.GetConnectionString("DbName")).Options;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

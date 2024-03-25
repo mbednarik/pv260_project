@@ -1,6 +1,6 @@
-using BL.DTOs;
+using FundParser.BL.DTOs;
 
-namespace BL.Services.HoldingDiffService
+namespace FundParser.BL.Services.HoldingDiffService
 {
     public interface IHoldingDiffService
     {

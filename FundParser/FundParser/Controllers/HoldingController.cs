@@ -1,7 +1,8 @@
-using BL.Services.HoldingService;
+using FundParser.BL.Services.HoldingService;
+
 using Microsoft.AspNetCore.Mvc;
 
-namespace FundParser.Controllers
+namespace FundParser.App.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -14,10 +15,10 @@ namespace FundParser.Controllers
             _holdingService = holdingService;
         }
 
-        [HttpGet(Name = "GetHoldings")]
-        public IActionResult GetHoldings()
+        [HttpGet(Name = nameof(GetHoldings))]
+        public IActionResult GetHoldings(CancellationToken cancellationToken)
         {
-            var data = _holdingService.GetHoldings();
+            var data = _holdingService.GetHoldings(cancellationToken);
             return new JsonResult(data);
         }
     }

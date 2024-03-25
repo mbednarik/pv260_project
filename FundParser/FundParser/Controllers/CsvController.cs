@@ -1,8 +1,9 @@
-using BL.Services.FundCsvService;
-using BL.Services.HoldingDiffService;
+using FundParser.BL.Services.FundCsvService;
+using FundParser.BL.Services.HoldingDiffService;
+
 using Microsoft.AspNetCore.Mvc;
 
-namespace FundParser.Controllers;
+namespace FundParser.App.Controllers;
 
 [ApiController]
 [Route("[controller]")]
@@ -18,14 +19,14 @@ public class CsvController : ControllerBase
     }
 
     [HttpPost(Name = "csv")]
-    public async Task<IActionResult> CsvUpload()
+    public async Task<IActionResult> CsvUpload(CancellationToken cancellationToken)
     {
         // temporary endpoint to update holdings for testing purposes
-        // await _fundCsvService.UpdateHoldings();
+        // await _fundCsvService.UpdateHoldings(cancellationToken);
         await _holdingDiffService
             .CalculateAndStoreHoldingDiffs(new DateTime(2024, 3, 15),
                 new DateTime(2024, 3, 15));
-        
+
         return Ok();
     }
 }

@@ -1,36 +1,34 @@
 using System.Globalization;
 
-using BL.DTOs;
-using BL.Services.HoldingService;
+using FundParser.BL.DTOs;
+using FundParser.BL.Services.HoldingService;
+using FundParser.DAL.Csv;
+using FundParser.DAL.Models;
+using FundParser.DAL.UnitOfWork;
 
-using DAL.Csv;
-using DAL.Models;
-using DAL.UnitOfWork.Interface;
-
-namespace BL.Services.FundCsvService;
+namespace FundParser.BL.Services.FundCsvService;
 
 public class FundCsvService : IFundCsvService
 {
     private readonly IHoldingService _holdingService;
-    private readonly IUoWHolding _uowHolding;
-    private readonly CsvDownloader<FundCsvRow> _csvDownloader;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly ICsvDownloader<FundCsvRow> _csvDownloader;
 
-    // TODO: rework this to use a single UoW, separate PR
     public FundCsvService(
         IHoldingService holdingService,
-        CsvDownloader<FundCsvRow> csvDownloader,
-        IUoWHolding uowHolding)
+        ICsvDownloader<FundCsvRow> csvDownloader,
+        IUnitOfWork unitOfWork)
     {
         _holdingService = holdingService;
         _csvDownloader = csvDownloader;
-        _uowHolding = uowHolding;
+        _unitOfWork = unitOfWork;
     }
 
-    public async Task<int> UpdateHoldings()
+    public async Task<int> UpdateHoldings(CancellationToken cancellationToken = default)
     {
         // TODO: move this to config
         var url = "http://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv";
-        var rows = await _csvDownloader.DownloadAndParse(url);
+        var rows = await _csvDownloader.DownloadAndParse(url, cancellationToken);
 
         if (rows == null)
         {
@@ -42,7 +40,7 @@ public class FundCsvService : IFundCsvService
         {
             try
             {
-                await ParseRow(row);
+                await ProcessRow(row, cancellationToken);
                 successfulRows++;
             }
             catch (Exception e)
@@ -54,17 +52,16 @@ public class FundCsvService : IFundCsvService
         return successfulRows;
     }
 
-    private async Task ParseRow(FundCsvRow row)
+    private async Task ProcessRow(FundCsvRow row, CancellationToken cancellationToken)
     {
         var holding = ParseFund(row);
 
-        await _holdingService.AddHolding(holding);
+        await _holdingService.AddHolding(holding, cancellationToken);
 
-        // TODO: rework this to use a single UoW, separate PR
-        await _uowHolding.CommitAsync();
+        await _unitOfWork.CommitAsync(cancellationToken);
     }
 
-    private AddHoldingDTO ParseFund(FundCsvRow row)
+    private static AddHoldingDTO ParseFund(FundCsvRow row)
     {
         var fund = new AddFundDTO
         {
