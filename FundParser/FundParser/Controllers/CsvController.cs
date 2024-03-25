@@ -1,5 +1,4 @@
 using FundParser.BL.Services.FundCsvService;
-using FundParser.BL.Services.HoldingDiffService;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,12 +9,10 @@ namespace FundParser.App.Controllers;
 public class CsvController : ControllerBase
 {
     private readonly IFundCsvService _fundCsvService;
-    private readonly IHoldingDiffService _holdingDiffService;
 
-    public CsvController(IFundCsvService fundCsvService, IHoldingDiffService holdingDiffService)
+    public CsvController(IFundCsvService fundCsvService)
     {
         _fundCsvService = fundCsvService;
-        _holdingDiffService = holdingDiffService;
     }
 
     [HttpPost(Name = "csv")]
