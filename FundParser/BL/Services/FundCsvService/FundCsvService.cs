@@ -50,20 +50,19 @@ public class FundCsvService : IFundCsvService
             }
             catch (Exception e)
             {
-                _unitOfWork.Dispose();
-                _logger.LogError("Unable to proccess csv from the API", nameof(FundCsvService));
-                Console.WriteLine(e);
+                _logger.LogError($"Unable to proccess csv from the API {row}", nameof(FundCsvService)); // Should return from the function, not continue executing ? 
             }
         }
-        await _unitOfWork.CommitAsync(cancellationToken);
-        _logger.LogInformation($"Succesfully updated holding from the API, number of influenced rows {successfulRows}.", nameof(FundCsvService));
         return successfulRows;
     }
 
     private async Task ProcessRow(FundCsvRow row, CancellationToken cancellationToken)
     {
         var holding = ParseFund(row);
+
         await _holdingService.AddHolding(holding, cancellationToken);
+
+        await _unitOfWork.CommitAsync(cancellationToken); // Maybe change to bulk insert ?
     }
 
     private static AddHoldingDTO ParseFund(FundCsvRow row)
