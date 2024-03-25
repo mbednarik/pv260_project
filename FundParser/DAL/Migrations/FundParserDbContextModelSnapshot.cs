@@ -187,6 +187,31 @@ namespace FundParser.DAL.Migrations
                     b.ToTable("HoldingDiffs");
                 });
 
+            modelBuilder.Entity("FundParser.DAL.Models.Log", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Severity")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Logs");
+                });
+
             modelBuilder.Entity("FundParser.DAL.Models.Holding", b =>
                 {
                     b.HasOne("FundParser.DAL.Models.Company", "Company")

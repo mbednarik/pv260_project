@@ -3,8 +3,8 @@ using AutoMapper;
 using FundParser.BL.Services.FundCsvService;
 using FundParser.BL.Services.HoldingDiffService;
 using FundParser.BL.Services.HoldingService;
-using FundParser.BL.Services.LoggingService;
 using FundParser.DAL.Csv;
+using FundParser.DAL.Logging;
 using FundParser.DAL.Models;
 using FundParser.DAL.Repository;
 using FundParser.DAL.UnitOfWork;
@@ -13,7 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FundParser.Configuration
 {
-    public static class ServiceConfig
+    public static class StartupExtensions
     {
         public static void ConfigureDependencyInjection(this IServiceCollection services)
         {

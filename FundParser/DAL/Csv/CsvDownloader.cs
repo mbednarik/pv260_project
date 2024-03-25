@@ -2,6 +2,7 @@ using System.Globalization;
 
 using CsvHelper;
 using CsvHelper.Configuration;
+using FundParser.DAL.Logging;
 
 namespace FundParser.DAL.Csv;
 
@@ -9,9 +10,11 @@ public class CsvDownloader<T> : ICsvDownloader<T>
 {
     private const int ColumnCount = 8;
     private readonly HttpClient _client;
+    private readonly ILoggingService _logger;
 
-    public CsvDownloader()
+    public CsvDownloader(ILoggingService logger)
     {
+        _logger = logger;
         _client = new HttpClient();
         _client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "text/csv");
         _client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent",
@@ -41,7 +44,7 @@ public class CsvDownloader<T> : ICsvDownloader<T>
         }
         catch (HttpRequestException e)
         {
-            Console.WriteLine("Error: {0} ", e.Message);
+            await _logger.LogError($"Unable to parse the imported csv file, error: {e.Message}", nameof(CsvDownloader<T>), cancellationToken);
             return null;
         }
     }

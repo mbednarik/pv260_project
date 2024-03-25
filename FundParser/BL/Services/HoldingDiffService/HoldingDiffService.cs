@@ -60,7 +60,7 @@ namespace FundParser.BL.Services.HoldingDiffService
 
             foreach (var holdingDiff in holdingDiffs)
             {
-                _unitOfWork.HoldingDiffRepository.Insert(holdingDiff);
+                await _unitOfWork.HoldingDiffRepository.Insert(holdingDiff, cancellationToken);
             }
 
             await _unitOfWork.CommitAsync(cancellationToken);

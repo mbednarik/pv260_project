@@ -483,5 +483,5 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 
-# Remove database file from the git
-*.sqlite
+# Remove database files from the git
+*.sqlite*

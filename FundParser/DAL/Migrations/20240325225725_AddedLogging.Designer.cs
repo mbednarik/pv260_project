@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FundParser.DAL.Migrations
 {
     [DbContext(typeof(FundParserDbContext))]
-    [Migration("20240325191628_LoggingAdded")]
-    partial class LoggingAdded
+    [Migration("20240325225725_AddedLogging")]
+    partial class AddedLogging
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -188,6 +188,31 @@ namespace FundParser.DAL.Migrations
                     b.HasIndex("OldHoldingId");
 
                     b.ToTable("HoldingDiffs");
+                });
+
+            modelBuilder.Entity("FundParser.DAL.Models.Log", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Severity")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Logs");
                 });
 
             modelBuilder.Entity("FundParser.DAL.Models.Holding", b =>

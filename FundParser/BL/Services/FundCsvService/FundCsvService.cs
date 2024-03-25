@@ -2,8 +2,8 @@ using System.Globalization;
 
 using FundParser.BL.DTOs;
 using FundParser.BL.Services.HoldingService;
-using FundParser.BL.Services.LoggingService;
 using FundParser.DAL.Csv;
+using FundParser.DAL.Logging;
 using FundParser.DAL.Models;
 using FundParser.DAL.UnitOfWork;
 
@@ -36,7 +36,7 @@ public class FundCsvService : IFundCsvService
 
         if (rows == null)
         {
-            _logger.LogError("Unable to download csv from the API", nameof(FundCsvService));
+            await _logger.LogError("Unable to download csv from the API", nameof(FundCsvService), cancellationToken);
             throw new Exception("Failed to download csv");
         }
 
@@ -45,12 +45,12 @@ public class FundCsvService : IFundCsvService
         {
             try
             {
-                await ProcessRow(row, cancellationToken);
-                successfulRows++;
-            }
+            await ProcessRow(row, cancellationToken);
+            successfulRows++;
+        }
             catch (Exception e)
             {
-                _logger.LogError($"Unable to proccess csv from the API {row}", nameof(FundCsvService)); // Should return from the function, not continue executing ? 
+                await _logger.LogError($"Unable to proccess csv row from the API {row}, thrown exception {e.Message}", nameof(FundCsvService));
             }
         }
         return successfulRows;

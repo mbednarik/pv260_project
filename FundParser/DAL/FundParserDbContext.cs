@@ -16,6 +16,8 @@ namespace FundParser.DAL
 
         public DbSet<HoldingDiff> HoldingDiffs { get; set; }
 
+        public DbSet<Log> Logs { get; set; }
+
         public FundParserDbContext() : base()
         {
         }

@@ -1,5 +1,5 @@
 using FundParser.BL.Services.FundCsvService;
-using FundParser.BL.Services.LoggingService;
+using FundParser.DAL.Logging;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FundParser.App.Controllers;
@@ -23,7 +23,7 @@ public class CsvController : ControllerBase
     {
         // temporary endpoint to update holdings for testing purposes
         var result = await _fundCsvService.UpdateHoldings(cancellationToken);
-        _logger.LogInformation("Csv imported from the website", nameof(CsvController));
+        await _logger.LogInformation("Csv imported from the website", nameof(CsvController), cancellationToken);
         return Ok(result);
     }
 }
