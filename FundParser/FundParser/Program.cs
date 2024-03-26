@@ -1,6 +1,5 @@
 using FundParser.Configuration;
 using FundParser.DAL;
-using Microsoft.EntityFrameworkCore;
 
 var customAllowSpecificOrigins = "_customAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);

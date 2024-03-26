@@ -1,5 +1,6 @@
 using FundParser.BL.Services.FundCsvService;
 using FundParser.DAL.Logging;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace FundParser.App.Controllers;
@@ -11,7 +12,7 @@ public class CsvController : ControllerBase
     private readonly IFundCsvService _fundCsvService;
     private readonly ILoggingService _logger;
 
-    public CsvController(IFundCsvService fundCsvService, 
+    public CsvController(IFundCsvService fundCsvService,
         ILoggingService logger)
     {
         _fundCsvService = fundCsvService;

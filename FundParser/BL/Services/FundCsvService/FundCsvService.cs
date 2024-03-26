@@ -36,7 +36,7 @@ public class FundCsvService : IFundCsvService
 
         if (rows == null)
         {
-            await _logger.LogError("Unable to download csv from the API", nameof(FundCsvService), cancellationToken);
+            await _logger.LogError("Unable to download csv from the API", nameof(FundCsvService));
             throw new Exception("Failed to download csv");
         }
 
@@ -45,9 +45,9 @@ public class FundCsvService : IFundCsvService
         {
             try
             {
-            await ProcessRow(row, cancellationToken);
-            successfulRows++;
-        }
+                await ProcessRow(row, cancellationToken);
+                successfulRows++;
+            }
             catch (Exception e)
             {
                 await _logger.LogError($"Unable to proccess csv row from the API {row}, thrown exception {e.Message}", nameof(FundCsvService));
@@ -62,7 +62,7 @@ public class FundCsvService : IFundCsvService
 
         await _holdingService.AddHolding(holding, cancellationToken);
 
-        await _unitOfWork.CommitAsync(cancellationToken); // Maybe change to bulk insert ?
+        await _unitOfWork.CommitAsync(cancellationToken);
     }
 
     private static AddHoldingDTO ParseFund(FundCsvRow row)

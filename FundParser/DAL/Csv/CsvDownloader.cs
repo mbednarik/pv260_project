@@ -2,6 +2,7 @@ using System.Globalization;
 
 using CsvHelper;
 using CsvHelper.Configuration;
+
 using FundParser.DAL.Logging;
 
 namespace FundParser.DAL.Csv;
@@ -44,7 +45,7 @@ public class CsvDownloader<T> : ICsvDownloader<T>
         }
         catch (HttpRequestException e)
         {
-            await _logger.LogError($"Unable to parse the imported csv file, error: {e.Message}", nameof(CsvDownloader<T>), cancellationToken);
+            await _logger.LogError($"Unable to parse the imported csv file, error: {e.Message}", nameof(CsvDownloader<T>));
             return null;
         }
     }
