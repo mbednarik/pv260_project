@@ -35,6 +35,8 @@ namespace FundParser.BL.Services.HoldingDiffService
                     hd.OldHolding == null && hd.NewHolding != null && hd.NewHolding.Date == newHoldingDate ||
                     hd.NewHolding == null && hd.OldHolding != null && hd.OldHolding.Date == oldHoldingDate ||
                     hd.OldHolding != null && hd.NewHolding != null && hd.OldHolding.Date == oldHoldingDate && hd.NewHolding.Date == newHoldingDate)
+                .Include(hd => hd.Fund)
+                .Include(hd => hd.Company)
                 .Select(hd => GetHoldingDiffDTO(hd))
                 .ToListAsync(cancellationToken);
         }
