@@ -26,15 +26,14 @@ namespace FundParser.DAL.Repository
             return entity;
         }
 
-        public virtual TEntity Insert(TEntity entity)
+        public virtual async Task<TEntity> Insert(TEntity entity, CancellationToken cancellationToken = default)
         {
             if (entity == null)
             {
                 throw new Exception("Argument entity is null");
             }
 
-            var result = _dbSet.Add(entity);
-            return result.Entity;
+            return (await _dbSet.AddAsync(entity, cancellationToken)).Entity;
         }
 
         public virtual void Delete(int id)

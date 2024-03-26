@@ -10,7 +10,7 @@ namespace FundParser.DAL.Repository
 
         Task<IEnumerable<TEntity>> GetAll(CancellationToken cancellationToken = default);
 
-        TEntity Insert(TEntity entity);
+        Task<TEntity> Insert(TEntity entity, CancellationToken cancellationToken = default);
 
         void Delete(int id);
 

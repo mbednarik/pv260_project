@@ -3,6 +3,7 @@ using System.Globalization;
 using FundParser.BL.DTOs;
 using FundParser.BL.Services.HoldingService;
 using FundParser.DAL.Csv;
+using FundParser.DAL.Logging;
 using FundParser.DAL.Models;
 using FundParser.DAL.UnitOfWork;
 
@@ -13,15 +14,18 @@ public class FundCsvService : IFundCsvService
     private readonly IHoldingService _holdingService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICsvDownloader<FundCsvRow> _csvDownloader;
+    private readonly ILoggingService _logger;
 
     public FundCsvService(
         IHoldingService holdingService,
         ICsvDownloader<FundCsvRow> csvDownloader,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ILoggingService logger)
     {
         _holdingService = holdingService;
         _csvDownloader = csvDownloader;
         _unitOfWork = unitOfWork;
+        _logger = logger;
     }
 
     public async Task<int> UpdateHoldings(CancellationToken cancellationToken = default)
@@ -32,6 +36,7 @@ public class FundCsvService : IFundCsvService
 
         if (rows == null)
         {
+            await _logger.LogError("Unable to download csv from the API", nameof(FundCsvService));
             throw new Exception("Failed to download csv");
         }
 
@@ -45,10 +50,9 @@ public class FundCsvService : IFundCsvService
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                await _logger.LogError($"Unable to proccess csv row from the API {row}, thrown exception {e.Message}", nameof(FundCsvService));
             }
         }
-
         return successfulRows;
     }
 

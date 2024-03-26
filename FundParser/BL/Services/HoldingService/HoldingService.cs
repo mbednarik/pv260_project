@@ -37,7 +37,7 @@ namespace FundParser.BL.Services.HoldingService
                 .GetQueryable()
                 .FirstOrDefaultAsync(f => f.Cusip == holding.Company.Cusip, cancellationToken);
 
-            var newHolding = _unitOfWork.HoldingRepository.Insert(new Holding
+            var newHolding = await _unitOfWork.HoldingRepository.Insert(new Holding
             {
                 Fund = existingFund ?? _mapper.Map<Fund>(holding.Fund),
                 Company = existingCompany ?? _mapper.Map<Company>(holding.Company),
