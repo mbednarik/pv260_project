@@ -34,7 +34,8 @@ namespace FundParser.BL.Services.DownloaderService
                 var response = await _client.SendAsync(request, cancellationToken);
                 if (!response.IsSuccessStatusCode)
                 {
-                    await _logger.LogError($"Failed to download csv, status code: {response.StatusCode}", nameof(DownloaderService), cancellationToken);
+                    await _logger.LogError($"Failed to download csv, server responded with status code: {response.StatusCode}",
+                        nameof(DownloaderService), cancellationToken);
                     return null;
                 }
                 using Stream responseStream = await response.Content.ReadAsStreamAsync(cancellationToken);
@@ -43,7 +44,7 @@ namespace FundParser.BL.Services.DownloaderService
             }
             catch (Exception e)
             {
-                await _logger.LogError($"Unable to parse the imported csv file, error: {e.Message}", nameof(DownloaderService), cancellationToken);
+                await _logger.LogError($"Unable to download file from {url}, error: {e.Message}", nameof(DownloaderService), cancellationToken);
                 return null;
             }
         }
