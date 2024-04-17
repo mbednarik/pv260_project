@@ -32,6 +32,7 @@ public class UnitOfWork : IUnitOfWork
     public void Dispose()
     {
         _context.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)

@@ -1,20 +1,19 @@
-﻿using FundParser.DAL.Models;
-using FundParser.DAL.Repository;
-
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace FundParser.DAL.Logging
+namespace FundParser.BL.Services.LoggingService
 {
     public class LoggingService : ILoggingService
     {
-        private readonly IRepository<Log> _logRepository;
-        private readonly FundParserDbContext _context;
-
-        public LoggingService(IRepository<Log> logRepository,
-             FundParserDbContext isolatedContext)
+        private readonly string _logFolderPath;
+        public LoggingService(IConfiguration configuration)
         {
-            _logRepository = logRepository;
-            _context = isolatedContext;
+            _logFolderPath = configuration.GetRequiredSection("LogFolderPath").Value
+                ?? throw new Exception("LogFolderPath is not set in the configuration");
+            if (!Directory.Exists(_logFolderPath))
+            {
+                Directory.CreateDirectory(_logFolderPath);
+            }
         }
 
         public async Task LogInformation(string message, string source, CancellationToken cancellationToken = default)
@@ -34,8 +33,8 @@ namespace FundParser.DAL.Logging
 
         public async Task Log(string message, string source, LogLevel severity = LogLevel.None, CancellationToken cancellationToken = default)
         {
-            await _logRepository.Insert(new Log { Message = message, Source = source, Severity = severity }, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
+            var logFilePath = Path.Combine(_logFolderPath, $"{DateTime.Now:yyyy-MM-dd}.log");
+            await File.AppendAllTextAsync(logFilePath, $"{DateTime.Now:HH:mm:ss} {severity}: {source}: {message}\n", cancellationToken);
         }
     }
 }

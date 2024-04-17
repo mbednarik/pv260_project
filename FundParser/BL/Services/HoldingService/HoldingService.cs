@@ -45,7 +45,7 @@ namespace FundParser.BL.Services.HoldingService
                 Date = holding.Date,
                 Weight = holding.Weight,
                 Shares = holding.Shares,
-            });
+            }, cancellationToken);
 
             return _mapper.Map<HoldingDTO>(newHolding);
         }

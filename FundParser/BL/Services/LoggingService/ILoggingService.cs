@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace FundParser.DAL.Logging
+namespace FundParser.BL.Services.LoggingService
 {
     public interface ILoggingService
     {
