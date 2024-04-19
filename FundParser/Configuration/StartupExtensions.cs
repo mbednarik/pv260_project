@@ -22,7 +22,7 @@ namespace FundParser.Configuration
             services.AddSingleton<IMapper>(new Mapper(new MapperConfiguration(MapperConfig.ConfigureMapper)));
 
             //Singleton DI Setup
-            services.AddTransient<IDownloaderService, DownloaderService>();
+            services.AddSingleton<IDownloaderService, DownloaderService>();
             services.AddSingleton<ILoggingService, LoggingService>();
             services.AddSingleton<ICsvParsingService<FundCsvRow>, CsvParsingService<FundCsvRow>>();
 
