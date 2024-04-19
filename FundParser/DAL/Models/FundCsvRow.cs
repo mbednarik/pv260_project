@@ -5,26 +5,32 @@ namespace FundParser.DAL.Models;
 public class FundCsvRow
 {
     [Name("date")]
-    public string date { get; set; }
+    public string Date { get; set; } 
 
     [Name("fund")]
-    public string fund { get; set; }
+    public string Fund { get; set; } 
 
     [Name("company")]
-    public string company { get; set; }
+    public string Company { get; set; } 
 
     [Name("ticker")]
-    public string ticker { get; set; }
+    public string Ticker { get; set; } 
 
     [Name("cusip")]
-    public string cusip { get; set; }
+    public string Cusip { get; set; } 
 
     [Name("shares")]
-    public string shares { get; set; }
+    public string Shares { get; set; } 
 
     [Name("market value ($)")]
-    public string marketValue { get; set; }
+    public string MarketValue { get; set; } 
 
     [Name("weight (%)")]
-    public string weight { get; set; }
+    public string Weight { get; set; } 
+
+    public override string ToString()
+    {
+        return $"Date: {Date}, Fund: {Fund}, Company: {Company}, Ticker: {Ticker}," +
+            $" Cusip: {Cusip}, Shares: {Shares}, MarketValue: {MarketValue}, Weight: {Weight}";
+    }
 }

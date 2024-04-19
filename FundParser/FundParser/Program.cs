@@ -1,3 +1,4 @@
+using FundParser.BL.Services.DownloaderService;
 using FundParser.Configuration;
 using FundParser.DAL;
 
@@ -7,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpClient<IDownloaderService, DownloaderService>()
+    .SetHandlerLifetime(TimeSpan.FromMinutes(5));
 
 builder.Services.AddCors(options =>
 {

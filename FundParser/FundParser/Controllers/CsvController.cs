@@ -1,6 +1,5 @@
 using FundParser.BL.Services.FundCsvService;
-using FundParser.DAL.Logging;
-
+using FundParser.BL.Services.LoggingService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FundParser.App.Controllers;

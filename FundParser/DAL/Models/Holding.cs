@@ -23,9 +23,9 @@ namespace FundParser.DAL.Models
         public decimal Weight { get; set; }
 
         [ForeignKey(nameof(FundId))]
-        public virtual Fund Fund { get; set; }
+        public virtual Fund Fund { get; set; } 
 
         [ForeignKey(nameof(CompanyId))]
-        public virtual Company Company { get; set; }
+        public virtual Company Company { get; set; } 
     }
 }

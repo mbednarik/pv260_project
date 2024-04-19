@@ -17,12 +17,8 @@ namespace FundParser.DAL.Repository
 
         public async virtual Task<TEntity> GetByID(int id, CancellationToken cancellationToken = default)
         {
-            TEntity? entity = await _dbSet.FindAsync([id], cancellationToken: cancellationToken);
-            if (entity == null)
-            {
-                throw new Exception("Entity with given Id does not exist.");
-            }
-
+            TEntity entity = await _dbSet.FindAsync([id], cancellationToken: cancellationToken) 
+                ?? throw new Exception("Entity with given Id does not exist.");
             return entity;
         }
 
@@ -38,12 +34,7 @@ namespace FundParser.DAL.Repository
 
         public virtual void Delete(int id)
         {
-            TEntity? entityToDelete = _dbSet.Find(id);
-            if (entityToDelete == null)
-            {
-                throw new Exception("Entity with given Id does not exist.");
-            }
-
+            TEntity entityToDelete = _dbSet.Find(id) ?? throw new Exception("Entity with given Id does not exist.");
             _dbSet.Remove(entityToDelete);
         }
 
