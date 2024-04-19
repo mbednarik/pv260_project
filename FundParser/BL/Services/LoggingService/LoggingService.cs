@@ -5,11 +5,14 @@ namespace FundParser.BL.Services.LoggingService
 {
     public class LoggingService : ILoggingService
     {
+        private const string LogPathSectionKey = "LogFolderPath";
+
         private readonly string _logFolderPath;
+
         public LoggingService(IConfiguration configuration)
         {
-            _logFolderPath = configuration.GetRequiredSection("LogFolderPath").Value
-                ?? throw new Exception("LogFolderPath is not set in the configuration");
+            _logFolderPath = configuration.GetRequiredSection(LogPathSectionKey).Value
+                ?? throw new Exception($"{LogPathSectionKey} is not set in the configuration");
             if (!Directory.Exists(_logFolderPath))
             {
                 Directory.CreateDirectory(_logFolderPath);

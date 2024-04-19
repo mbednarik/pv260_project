@@ -1,4 +1,5 @@
 using System.Globalization;
+
 using FundParser.BL.DTOs;
 using FundParser.BL.Services.CsvParserService;
 using FundParser.BL.Services.DownloaderService;
@@ -6,12 +7,15 @@ using FundParser.BL.Services.HoldingService;
 using FundParser.BL.Services.LoggingService;
 using FundParser.DAL.Models;
 using FundParser.DAL.UnitOfWork;
+
 using Microsoft.Extensions.Configuration;
 
 namespace FundParser.BL.Services.FundCsvService;
 
 public class FundCsvService : IFundCsvService
 {
+    private const string CsvUrlSectionKey = "FundCsvUrl";
+
     private readonly IHoldingService _holdingService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IConfiguration _configuration;
@@ -41,12 +45,12 @@ public class FundCsvService : IFundCsvService
 
     public async Task<int> UpdateHoldings(CancellationToken cancellationToken = default)
     {
-        var url = _configuration.GetRequiredSection("FundCsvUrl").Value;
+        var url = _configuration.GetRequiredSection(CsvUrlSectionKey).Value;
         if (url is null)
         {
-            await _logger.LogError("FundCsvUrl is not set in the configuration",
+            await _logger.LogError($"{CsvUrlSectionKey} is not set in the configuration",
                 nameof(FundCsvService), cancellationToken);
-            throw new Exception("FundCsvUrl is not set in the configuration");
+            throw new Exception($"{CsvUrlSectionKey} is not set in the configuration");
         }
         var csvString = await _downloaderService.DownloadTextFileAsStringAsync(url,
             _csvRequestHeaders, cancellationToken)
