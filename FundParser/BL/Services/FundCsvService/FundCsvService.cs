@@ -15,14 +15,14 @@ public class FundCsvService : IFundCsvService
     private readonly IHoldingService _holdingService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IConfiguration _configuration;
-    private readonly ICsvParserService<FundCsvRow> _csvParser;
+    private readonly ICsvParsingService<FundCsvRow> _csvParser;
     private readonly IDownloaderService _downloaderService;
     private readonly ILoggingService _logger;
     private readonly List<(string, string)> _csvRequestHeaders;
 
     public FundCsvService(
         IHoldingService holdingService,
-        ICsvParserService<FundCsvRow> csvParser,
+        ICsvParsingService<FundCsvRow> csvParser,
         IDownloaderService downloaderService,
         IUnitOfWork unitOfWork,
         ILoggingService logger,
@@ -41,15 +41,18 @@ public class FundCsvService : IFundCsvService
 
     public async Task<int> UpdateHoldings(CancellationToken cancellationToken = default)
     {
-        var url = _configuration.GetRequiredSection("CsvParserUrl").Value;
+        var url = _configuration.GetRequiredSection("FundCsvUrl").Value;
         if (url is null)
         {
-            await _logger.LogError("CsvParserUrl is not set in the configuration", nameof(FundCsvService), cancellationToken);
-            throw new Exception("CsvParserUrl is not set in the configuration");
+            await _logger.LogError("FundCsvUrl is not set in the configuration",
+                nameof(FundCsvService), cancellationToken);
+            throw new Exception("FundCsvUrl is not set in the configuration");
         }
-        var csvString = await _downloaderService.DownloadTextFileAsStringAsync(url, _csvRequestHeaders, cancellationToken)
+        var csvString = await _downloaderService.DownloadTextFileAsStringAsync(url,
+            _csvRequestHeaders, cancellationToken)
             ?? throw new Exception("Failed to download csv");
-        var csvRows = _csvParser.ParseString(csvString, cancellationToken) ?? throw new Exception("Failed to parse csv");
+        var csvRows = _csvParser.ParseString(csvString, cancellationToken)
+            ?? throw new Exception("Failed to parse csv");
         var successfulRows = 0;
         foreach (var row in csvRows)
         {
@@ -60,15 +63,18 @@ public class FundCsvService : IFundCsvService
             }
             catch (Exception e)
             {
-                await _logger.LogError($"Unable to proccess csv row from the API {row}, thrown exception {e.Message}", nameof(FundCsvService), cancellationToken);
+                await _logger.LogError($"Unable to proccess csv row from the API {row}, thrown exception {e.Message}",
+                    nameof(FundCsvService), cancellationToken);
             }
         }
+
         return successfulRows;
     }
 
     private async Task ProcessRow(FundCsvRow row, CancellationToken cancellationToken)
     {
         var holding = ParseFund(row);
+
         await _holdingService.AddHolding(holding, cancellationToken);
         await _unitOfWork.CommitAsync(cancellationToken);
     }
@@ -77,23 +83,24 @@ public class FundCsvService : IFundCsvService
     {
         var fund = new AddFundDTO
         {
-            Name = row.fund,
+            Name = row.Fund,
         };
         var company = new AddCompanyDTO
         {
-            Cusip = row.cusip,
-            Ticker = row.ticker,
-            Name = row.company,
+            Cusip = row.Cusip,
+            Ticker = row.Ticker,
+            Name = row.Company,
         };
         var holding = new AddHoldingDTO
         {
             Fund = fund,
             Company = company,
-            Shares = decimal.Parse(row.shares),
-            MarketValue = decimal.Parse(row.marketValue.TrimStart('$')),
-            Weight = decimal.Parse(row.weight.TrimEnd('%')),
-            Date = DateTime.ParseExact(row.date, "MM/dd/yyyy", CultureInfo.InvariantCulture),
+            Shares = decimal.Parse(row.Shares),
+            MarketValue = decimal.Parse(row.MarketValue.TrimStart('$')),
+            Weight = decimal.Parse(row.Weight.TrimEnd('%')),
+            Date = DateTime.ParseExact(row.Date, "MM/dd/yyyy", CultureInfo.InvariantCulture),
         };
+
         return holding;
     }
 }

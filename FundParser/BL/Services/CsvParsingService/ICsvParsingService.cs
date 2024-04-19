@@ -1,6 +1,6 @@
 namespace FundParser.BL.Services.CsvParserService
 {
-    public interface ICsvParserService<T>
+    public interface ICsvParsingService<T>
     {
         IEnumerable<T>? ParseString(string inputString, CancellationToken cancellationToken = default);
     }

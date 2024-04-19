@@ -4,9 +4,9 @@ public class CompanyDTO
 {
     public int Id { get; set; }
 
-    public string Name { get; set; } = null!;
+    public string Name { get; set; } 
 
-    public string Cusip { get; set; } = null!;
+    public string Cusip { get; set; } 
 
-    public string Ticker { get; set; } = null!;
+    public string Ticker { get; set; } 
 }

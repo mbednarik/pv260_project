@@ -23,7 +23,7 @@ namespace FundParser.Configuration
             //Singleton DI Setup
             services.AddSingleton<IDownloaderService, DownloaderService>();
             services.AddSingleton<ILoggingService, LoggingService>();
-            services.AddSingleton<ICsvParserService<FundCsvRow>, CsvParserService<FundCsvRow>>();
+            services.AddSingleton<ICsvParsingService<FundCsvRow>, CsvParsingService<FundCsvRow>>();
 
             //Repository DI Setup
             services.AddScoped<IRepository<Holding>, Repository<Holding>>();

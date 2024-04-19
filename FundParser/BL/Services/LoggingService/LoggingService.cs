@@ -16,25 +16,27 @@ namespace FundParser.BL.Services.LoggingService
             }
         }
 
-        public async Task LogInformation(string message, string source, CancellationToken cancellationToken = default)
+        public Task LogInformation(string message, string source, CancellationToken cancellationToken = default)
         {
-            await Log(message, source, LogLevel.Information, cancellationToken);
+            return Log(message, source, LogLevel.Information, cancellationToken);
         }
 
-        public async Task LogWarning(string message, string source, CancellationToken cancellationToken = default)
+        public Task LogWarning(string message, string source, CancellationToken cancellationToken = default)
         {
-            await Log(message, source, LogLevel.Warning, cancellationToken);
+            return Log(message, source, LogLevel.Warning, cancellationToken);
         }
 
-        public async Task LogError(string message, string source, CancellationToken cancellationToken = default)
+        public Task LogError(string message, string source, CancellationToken cancellationToken = default)
         {
-            await Log(message, source, LogLevel.Error, cancellationToken);
+            return Log(message, source, LogLevel.Error, cancellationToken);
         }
 
-        public async Task Log(string message, string source, LogLevel severity = LogLevel.None, CancellationToken cancellationToken = default)
+        public async Task Log(string message, string source, LogLevel severity = LogLevel.None,
+            CancellationToken cancellationToken = default)
         {
             var logFilePath = Path.Combine(_logFolderPath, $"{DateTime.Now:yyyy-MM-dd}.log");
-            await File.AppendAllTextAsync(logFilePath, $"{DateTime.Now:HH:mm:ss} {severity}: {source}: {message}\n", cancellationToken);
+            await File.AppendAllTextAsync(logFilePath,
+                $"{DateTime.Now:HH:mm:ss} {severity}: {source}: {message}{Environment.NewLine}", cancellationToken);
         }
     }
 }

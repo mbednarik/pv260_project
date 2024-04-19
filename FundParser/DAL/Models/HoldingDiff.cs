@@ -30,15 +30,15 @@ namespace FundParser.DAL.Models
         public decimal WeightChange { get; set; }
 
         [ForeignKey(nameof(FundId))]
-        public virtual Fund Fund { get; set; } = null!;
+        public virtual Fund Fund { get; set; } 
 
         [ForeignKey(nameof(CompanyId))]
-        public virtual Company Company { get; set; } = null!;
+        public virtual Company Company { get; set; } 
 
         [ForeignKey(nameof(OldHoldingId))]
-        public virtual Holding? OldHolding { get; set; } = null!;
+        public virtual Holding? OldHolding { get; set; } 
 
         [ForeignKey(nameof(NewHoldingId))]
-        public virtual Holding? NewHolding { get; set; } = null!;
+        public virtual Holding? NewHolding { get; set; } 
     }
 }

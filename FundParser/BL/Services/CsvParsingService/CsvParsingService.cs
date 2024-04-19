@@ -5,12 +5,12 @@ using FundParser.BL.Services.LoggingService;
 
 namespace FundParser.BL.Services.CsvParserService;
 
-public class CsvParserService<T> : ICsvParserService<T>
+public class CsvParsingService<T> : ICsvParsingService<T>
 {
     private readonly CsvConfiguration _csvConfig;
     private readonly ILoggingService _logger;
 
-    public CsvParserService(ILoggingService logger)
+    public CsvParsingService(ILoggingService logger)
     {
         _csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
@@ -30,8 +30,10 @@ public class CsvParserService<T> : ICsvParserService<T>
             var columnCount = typeof(T).GetProperties().Length;
             _csvConfig.ShouldSkipRecord = r => r.Row.ColumnCount != columnCount;
             using var csvReader = new CsvReader(reader, _csvConfig);
+
             return csvReader.GetRecords<T>().ToList();
-        } catch (Exception e)
+        } 
+        catch (Exception e)
         {
             _logger.LogError($"Invalid csv format: {e.Message}", nameof(CsvParserService), cancellationToken);
             return null;

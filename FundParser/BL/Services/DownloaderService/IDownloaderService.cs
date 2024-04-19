@@ -2,7 +2,7 @@
 {
     public interface IDownloaderService
     {
-        public Task<string?> DownloadTextFileAsStringAsync(string url,
+        Task<string?> DownloadTextFileAsStringAsync(string url,
             IEnumerable<(string, string)>? headers = default, CancellationToken cancellationToken = default);
     }
 }
