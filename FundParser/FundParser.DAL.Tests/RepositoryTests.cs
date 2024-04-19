@@ -14,6 +14,7 @@ namespace FundParser.DAL.Tests
             [Test]
             public async Task GetByID_NonExistingEntity_ReturnsNull()
             {
+                // Arrange
                 context.Companies.Add(new Company
                 {
                     Name = CompanyName,
@@ -22,14 +23,17 @@ namespace FundParser.DAL.Tests
                 });
                 await context.SaveChangesAsync();
 
+                // Act
                 var result = await repository.GetByID(0);
 
+                // Assert
                 Assert.That(result, Is.Null);
             }
 
             [Test]
             public async Task GetByID_ExistingEntity_ReturnsCorrectEntity()
             {
+                // Arrange
                 var expectedEntity = new Company
                 {
                     Name = CompanyName,
@@ -39,8 +43,10 @@ namespace FundParser.DAL.Tests
                 context.Companies.Add(expectedEntity);
                 await context.SaveChangesAsync();
 
+                // Act
                 var result = await repository.GetByID(expectedEntity.Id);
 
+                // Assert
                 AssertCompany(result, expectedEntity);
             }
         }
@@ -50,12 +56,14 @@ namespace FundParser.DAL.Tests
             [Test]
             public void Insert_NullEntity_ThrowsException()
             {
+                // Act, Assert
                 Assert.That(async () => await repository.Insert(null!), Throws.ArgumentNullException);
             }
 
             [Test]
             public async Task Insert_EmptySet_InsertsEntity()
             {
+                // Act
                 var expectedEntity = new Company
                 {
                     Name = CompanyName,
@@ -65,7 +73,8 @@ namespace FundParser.DAL.Tests
                 await repository.Insert(expectedEntity);
                 await context.SaveChangesAsync();
 
-                var result = await GetContext().Companies.ToListAsync();
+                // Assert
+                var result = await context.Companies.ToListAsync();
 
                 Assert.That(result, Has.Count.EqualTo(1));
                 AssertCompany(result.First(), expectedEntity);
@@ -74,6 +83,7 @@ namespace FundParser.DAL.Tests
             [Test]
             public async Task Insert_NonEmptySet_InsertsEntity()
             {
+                // Arrange
                 await context.Companies.AddAsync(new Company
                 {
                     Name = CompanyName + 1,
@@ -82,6 +92,7 @@ namespace FundParser.DAL.Tests
                 });
                 await context.SaveChangesAsync();
 
+                // Act
                 var expectedEntity = new Company
                 {
                     Name = CompanyName,
@@ -91,7 +102,8 @@ namespace FundParser.DAL.Tests
                 await repository.Insert(expectedEntity);
                 await context.SaveChangesAsync();
 
-                var result = await GetContext().Companies.OrderBy(entity => entity.Id).ToListAsync();
+                // Assert
+                var result = await context.Companies.OrderBy(entity => entity.Id).ToListAsync();
 
                 Assert.That(result, Has.Count.EqualTo(2));
                 AssertCompany(result.Skip(1).First(), expectedEntity);
@@ -103,18 +115,21 @@ namespace FundParser.DAL.Tests
             [Test]
             public void Delete_NonExistingEntity_ThrowsException()
             {
+                // Act, Assert
                 Assert.That(async () => await repository.Delete(0), Throws.Exception.With.Message.EqualTo("Entity with given Id does not exist."));
             }
 
             [Test]
             public void Delete_NullEntity_ThrowsException()
             {
+                // Act, Assert
                 Assert.That(() => repository.Delete(null!), Throws.ArgumentNullException);
             }
 
             [Test]
             public async Task Delete_OneExistingEntity_DeletesEntity()
             {
+                // Arrange
                 var expectedEntity = new Company
                 {
                     Name = CompanyName,
@@ -124,10 +139,12 @@ namespace FundParser.DAL.Tests
                 await context.AddAsync(expectedEntity);
                 await context.SaveChangesAsync();
 
+                // Act
                 repository.Delete(expectedEntity);
                 await context.SaveChangesAsync();
 
-                var result = await GetContext().Companies.ToListAsync();
+                // Assert
+                var result = await context.Companies.ToListAsync();
 
                 Assert.That(result, Is.Empty);
             }
@@ -135,6 +152,7 @@ namespace FundParser.DAL.Tests
             [Test]
             public async Task Delete_MultipleExistingEntities_DeletesEntity()
             {
+                // Arrange
                 await context.Companies.AddAsync(new Company
                 {
                     Name = CompanyName + 1,
@@ -150,10 +168,12 @@ namespace FundParser.DAL.Tests
                 await context.AddAsync(expectedEntity);
                 await context.SaveChangesAsync();
 
+                // Act
                 repository.Delete(expectedEntity);
                 await context.SaveChangesAsync();
 
-                var result = await GetContext().Companies.ToListAsync();
+                // Assert
+                var result = await context.Companies.ToListAsync();
 
                 Assert.Multiple(() =>
                 {
@@ -168,12 +188,14 @@ namespace FundParser.DAL.Tests
             [Test]
             public void Update_NullEntity_ThrowsException()
             {
+                // Act, Assert
                 Assert.That(() => repository.Update(null!), Throws.ArgumentNullException);
             }
 
             [Test]
             public async Task Update_OneExistingEntity_UpdatesEntity()
             {
+                // Arrange
                 var expectedEntity = new Company
                 {
                     Name = CompanyName,
@@ -182,13 +204,15 @@ namespace FundParser.DAL.Tests
                 };
                 await context.AddAsync(expectedEntity);
                 await context.SaveChangesAsync();
-                var newName = "newName";
 
+                // Act
+                var newName = "newName";
                 expectedEntity.Name = newName;
                 repository.Update(expectedEntity);
                 await context.SaveChangesAsync();
 
-                var result = await GetContext().Companies.ToListAsync();
+                // Assert
+                var result = await context.Companies.ToListAsync();
 
                 AssertCompany(result.Single(), expectedEntity);
             }
@@ -196,6 +220,7 @@ namespace FundParser.DAL.Tests
             [Test]
             public async Task Update_MultipleExistingEntities_UpdatesCorrectEntity()
             {
+                // Arrange
                 var otherEntity = new Company
                 {
                     Name = CompanyName + 1,
@@ -212,13 +237,14 @@ namespace FundParser.DAL.Tests
                 await context.AddRangeAsync(otherEntity, expectedEntity);
                 await context.SaveChangesAsync();
 
+                // Act
                 var newName = "newName";
-
                 expectedEntity.Name = newName;
                 repository.Update(expectedEntity);
                 await context.SaveChangesAsync();
 
-                var result = await GetContext().Companies.OrderBy(entity => entity.Id).ToListAsync();
+                // Assert
+                var result = await context.Companies.OrderBy(entity => entity.Id).ToListAsync();
 
                 Assert.That(result, Has.Count.EqualTo(2));
                 Assert.Multiple(() =>
@@ -235,14 +261,17 @@ namespace FundParser.DAL.Tests
             [Test]
             public async Task GetAll_EmptySet_ReturnsNoEntities()
             {
+                // Act
                 var result = await repository.GetAll();
 
+                // Assert
                 Assert.That(result, Is.Empty);
             }
 
             [Test]
             public async Task GetAll_NonEmptySet_ReturnsCorrectEntities()
             {
+                // Arrange
                 var entity1 = new Company
                 {
                     Name = CompanyName + 1,
@@ -264,8 +293,10 @@ namespace FundParser.DAL.Tests
                 await context.AddRangeAsync(entity1, entity2, entity3);
                 await context.SaveChangesAsync();
 
+                // Act
                 var result = (await repository.GetAll()).OrderBy(entity => entity.Id).ToList();
 
+                // Assert
                 Assert.That(result, Has.Count.EqualTo(3));
                 Assert.Multiple(() =>
                 {
@@ -281,14 +312,17 @@ namespace FundParser.DAL.Tests
             [Test]
             public void GetQueryable_EmptySet_ReturnsNoEntities()
             {
+                // Act
                 var result = repository.GetQueryable().ToList();
 
+                // Assert
                 Assert.That(result, Is.Empty);
             }
 
             [Test]
             public async Task GetQueryable_NonEmptySet_ReturnsCorrectEntities()
             {
+                // Arrange
                 var entity1 = new Company
                 {
                     Name = CompanyName + 1,
@@ -310,8 +344,10 @@ namespace FundParser.DAL.Tests
                 await context.AddRangeAsync(entity1, entity2, entity3);
                 await context.SaveChangesAsync();
 
+                // Act
                 var result = repository.GetQueryable().OrderBy(entity => entity.Id).ToList();
 
+                // Assert
                 Assert.That(result, Has.Count.EqualTo(3));
                 Assert.Multiple(() =>
                 {
@@ -329,7 +365,6 @@ namespace FundParser.DAL.Tests
             protected const string CompanyCusip = "Cusip";
             protected const string CompanyTicker = "Ticker";
 
-            private DbContextOptions<FundParserDbContext> _options;
             protected FundParserDbContext context;
             protected Repository<Company> repository;
 
@@ -340,12 +375,12 @@ namespace FundParser.DAL.Tests
                     .AddEntityFrameworkInMemoryDatabase()
                     .BuildServiceProvider();
 
-                _options = new DbContextOptionsBuilder<FundParserDbContext>()
+                var options = new DbContextOptionsBuilder<FundParserDbContext>()
                     .UseInMemoryDatabase($"FundParser_test_db_{Guid.NewGuid()}")
                     .UseInternalServiceProvider(serviceProvider)
                     .Options;
 
-                context = GetContext();
+                context = new FundParserDbContext(options);
                 repository = new Repository<Company>(context);
             }
 
@@ -353,11 +388,6 @@ namespace FundParser.DAL.Tests
             public void TearDown()
             {
                 context.Dispose();
-            }
-
-            protected FundParserDbContext GetContext()
-            {
-                return new FundParserDbContext(_options);
             }
 
             protected static void AssertCompany(Company? company, Company expectedCompany)
