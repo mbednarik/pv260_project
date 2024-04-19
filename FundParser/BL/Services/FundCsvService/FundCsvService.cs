@@ -1,7 +1,7 @@
 using System.Globalization;
 
 using FundParser.BL.DTOs;
-using FundParser.BL.Services.CsvParserService;
+using FundParser.BL.Services.CsvParsingService;
 using FundParser.BL.Services.DownloaderService;
 using FundParser.BL.Services.HoldingService;
 using FundParser.BL.Services.LoggingService;
@@ -19,21 +19,21 @@ public class FundCsvService : IFundCsvService
     private readonly IHoldingService _holdingService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IConfiguration _configuration;
-    private readonly ICsvParsingService<FundCsvRow> _csvParser;
+    private readonly ICsvParsingService<FundCsvRow> _csvParsingService;
     private readonly IDownloaderService _downloaderService;
     private readonly ILoggingService _logger;
     private readonly List<(string, string)> _csvRequestHeaders;
 
     public FundCsvService(
         IHoldingService holdingService,
-        ICsvParsingService<FundCsvRow> csvParser,
+        ICsvParsingService<FundCsvRow> csvParsingService,
         IDownloaderService downloaderService,
         IUnitOfWork unitOfWork,
         ILoggingService logger,
         IConfiguration configuration)
     {
         _holdingService = holdingService;
-        _csvParser = csvParser;
+        _csvParsingService = csvParsingService;
         _downloaderService = downloaderService;
         _unitOfWork = unitOfWork;
         _configuration = configuration;
@@ -52,11 +52,13 @@ public class FundCsvService : IFundCsvService
                 nameof(FundCsvService), cancellationToken);
             throw new Exception($"{CsvUrlSectionKey} is not set in the configuration");
         }
-        var csvString = await _downloaderService.DownloadTextFileAsStringAsync(url,
-            _csvRequestHeaders, cancellationToken)
+
+        var csvString = await _downloaderService.DownloadTextFileAsStringAsync(url, _csvRequestHeaders, cancellationToken)
             ?? throw new Exception("Failed to download csv");
-        var csvRows = _csvParser.ParseString(csvString, cancellationToken)
+
+        var csvRows = _csvParsingService.ParseString(csvString, cancellationToken)
             ?? throw new Exception("Failed to parse csv");
+
         var successfulRows = 0;
         foreach (var row in csvRows)
         {
@@ -89,12 +91,14 @@ public class FundCsvService : IFundCsvService
         {
             Name = row.Fund,
         };
+
         var company = new AddCompanyDTO
         {
             Cusip = row.Cusip,
             Ticker = row.Ticker,
             Name = row.Company,
         };
+
         var holding = new AddHoldingDTO
         {
             Fund = fund,

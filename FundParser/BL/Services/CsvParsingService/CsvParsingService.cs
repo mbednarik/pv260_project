@@ -1,9 +1,11 @@
 using System.Globalization;
+
 using CsvHelper;
 using CsvHelper.Configuration;
+
 using FundParser.BL.Services.LoggingService;
 
-namespace FundParser.BL.Services.CsvParserService;
+namespace FundParser.BL.Services.CsvParsingService;
 
 public class CsvParsingService<T> : ICsvParsingService<T>
 {
@@ -32,10 +34,10 @@ public class CsvParsingService<T> : ICsvParsingService<T>
             using var csvReader = new CsvReader(reader, _csvConfig);
 
             return csvReader.GetRecords<T>().ToList();
-        } 
+        }
         catch (Exception e)
         {
-            _logger.LogError($"Invalid csv format: {e.Message}", nameof(CsvParserService), cancellationToken);
+            _logger.LogError($"Invalid csv format: {e.Message}", nameof(CsvParsingService<T>), cancellationToken);
             return null;
         }
     }

@@ -1,5 +1,6 @@
 using AutoMapper;
-using FundParser.BL.Services.CsvParserService;
+
+using FundParser.BL.Services.CsvParsingService;
 using FundParser.BL.Services.DownloaderService;
 using FundParser.BL.Services.FundCsvService;
 using FundParser.BL.Services.HoldingDiffService;
@@ -21,7 +22,7 @@ namespace FundParser.Configuration
             services.AddSingleton<IMapper>(new Mapper(new MapperConfiguration(MapperConfig.ConfigureMapper)));
 
             //Singleton DI Setup
-            services.AddSingleton<IDownloaderService, DownloaderService>();
+            services.AddTransient<IDownloaderService, DownloaderService>();
             services.AddSingleton<ILoggingService, LoggingService>();
             services.AddSingleton<ICsvParsingService<FundCsvRow>, CsvParsingService<FundCsvRow>>();
 

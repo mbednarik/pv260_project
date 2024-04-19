@@ -1,4 +1,4 @@
-namespace FundParser.BL.Services.CsvParserService
+namespace FundParser.BL.Services.CsvParsingService
 {
     public interface ICsvParsingService<T>
     {
