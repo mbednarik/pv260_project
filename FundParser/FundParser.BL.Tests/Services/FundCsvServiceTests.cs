@@ -13,8 +13,7 @@ namespace FundParser.BL.Tests.Services;
 
 public class FundCsvServiceTests
 {
-    private const string Url =
-        "http://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv";
+    private const string Url = "http://supercoolwebsite.com/fund.csv";
 
     private Mock<IHoldingService> _holdingServiceMock;
     private Mock<ICsvParsingService<FundCsvRow>> _csvParsingServiceMock;
