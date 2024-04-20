@@ -8,24 +8,24 @@ namespace FundParser.BL.Tests.Services;
 [TestFixture]
 public class LoggingServiceTests
 {
-    private Mock<IConfiguration> _mockConfiguration;
-    private Mock<IConfigurationSection> _mockConfigurationSection;
-    private string _testLogFolderPath = Path.Combine(Path.GetTempPath(), "TestLogs");
+    private readonly string _testLogFolderPath = Path.Combine(Path.GetTempPath(), "TestLogs");
+    private Mock<IConfiguration> _mockConfigurationMock;
+    private Mock<IConfigurationSection> _mockConfigurationSectionMock;
     private ILoggingService _loggingService;
 
     [SetUp]
     public void SetUp()
     {
         // Mock IConfigurationSection
-        _mockConfigurationSection = new Mock<IConfigurationSection>();
-        _mockConfigurationSection.SetupGet(m => m.Value).Returns(_testLogFolderPath);
+        _mockConfigurationSectionMock = new Mock<IConfigurationSection>();
+        _mockConfigurationSectionMock.SetupGet(m => m.Value).Returns(_testLogFolderPath);
 
         // Mock IConfiguration
-        _mockConfiguration = new Mock<IConfiguration>();
-        _mockConfiguration.Setup(m => m.GetSection(It.IsAny<string>())).Returns(_mockConfigurationSection.Object);
+        _mockConfigurationMock = new Mock<IConfiguration>();
+        _mockConfigurationMock.Setup(m => m.GetSection(It.IsAny<string>())).Returns(_mockConfigurationSectionMock.Object);
 
         // Initialize LoggingService with mocked IConfiguration
-        _loggingService = new LoggingService(_mockConfiguration.Object);
+        _loggingService = new LoggingService(_mockConfigurationMock.Object);
     }
 
 
@@ -33,25 +33,28 @@ public class LoggingServiceTests
     public void Constructor_ValidConfiguration_CreatesLogFolder()
     {
         // Arrange & Act & Assert
-        Assert.IsTrue(Directory.Exists(_testLogFolderPath));
+        Assert.That(Directory.Exists(_testLogFolderPath), Is.True);
     }
 
     [Test]
     public void Constructor_InvalidConfiguration_ThrowsException()
     {
         // Arrange
-        _mockConfigurationSection.SetupGet(m => m.Value).Returns((string)null);
+        _mockConfigurationSectionMock.SetupGet(m => m.Value).Returns((string)null!);
 
         // Act & Assert
-        Assert.Throws<InvalidOperationException>(() => new LoggingService(_mockConfiguration.Object));
+        Assert.Throws<InvalidOperationException>(() =>
+        {
+            var loggingService = new LoggingService(_mockConfigurationMock.Object);
+        });
     }
 
     [Test]
     public async Task LogInformation_ValidMessage_WritesToLogFile()
     {
         // Arrange
-        var message = "Test information message";
-        var source = "Test information source";
+        const string message = "Test information message";
+        const string source = "Test information source";
 
         // Act
         await _loggingService.LogInformation(message, source);
@@ -74,8 +77,8 @@ public class LoggingServiceTests
     public async Task LogWarning_ValidMessage_WritesToLogFile()
     {
         // Arrange
-        var message = "Test warning message";
-        var source = "Test warning source";
+        const string message = "Test warning message";
+        const string source = "Test warning source";
 
         // Act
         await _loggingService.LogWarning(message, source);
@@ -98,8 +101,8 @@ public class LoggingServiceTests
     public async Task LogError_ValidMessage_WritesToLogFile()
     {
         // Arrange
-        var message = "Test error message";
-        var source = "Test error source";
+        const string message = "Test error message";
+        const string source = "Test error source";
 
         // Act
         await _loggingService.LogError(message, source);
