@@ -164,6 +164,12 @@ public class HoldingServiceTests
         Assert.ThrowsAsync<InvalidOperationException>(() => _holdingService.AddHolding(null));
     }
 
+    [TearDown]
+    public void TearDown()
+    {
+        _unitOfWork.Dispose();
+    }
+
     private static Holding CreateHolding(int var) => new Holding
     {
         Weight = var,
