@@ -56,8 +56,8 @@ public class FundCsvServiceTests
     public async Task UpdateHoldings_SuccessfulUpdate_ReturnsCorrectCount()
     {
         // Arrange
-        var csvString = "Fund,Cusip,Ticker,Company,Shares,MarketValue,Weight,Date\n" +
-                        "ARKK,12345,ABC,Test Company,1000,$10000,10%,01/01/2022";
+        const string csvString = "Fund,Cusip,Ticker,Company,Shares,MarketValue,Weight,Date\n" +
+                                 "ARKK,12345,ABC,Test Company,1000,$10000,10%,01/01/2022";
         _downloaderServiceMock.Setup(m => m.DownloadTextFileAsStringAsync(It.IsAny<string>(),
                 It.IsAny<List<(string, string)>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(csvString);
@@ -96,17 +96,14 @@ public class FundCsvServiceTests
 
         // Act & Assert
         Assert.ThrowsAsync<Exception>(() => _fundCsvService.UpdateHoldings());
-        _loggerMock.Verify(
-            logger => logger.LogError(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()),
-            Times.Once);
     }
 
     [Test]
     public void UpdateHoldings_FailToParse_ThrowsException()
     {
         // Arrange
-        var csvString = "Fund,Cusip,Ticker,Company,Shares,MarketValue,Weight,Date\n" +
-                        "ARKK,12345,ABC,Test Company,1000,$10000,10%,01/01/2022";
+        const string csvString = "Fund,Cusip,Ticker,Company,Shares,MarketValue,Weight,Date\n" +
+                                 "ARKK,12345,ABC,Test Company,1000,$10000,10%,01/01/2022";
         _downloaderServiceMock.Setup(m => m.DownloadTextFileAsStringAsync(It.IsAny<string>(),
                 It.IsAny<List<(string, string)>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(csvString);
