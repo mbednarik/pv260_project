@@ -22,7 +22,8 @@ public class LoggingServiceTests
 
         // Mock IConfiguration
         _mockConfigurationMock = new Mock<IConfiguration>();
-        _mockConfigurationMock.Setup(m => m.GetSection(It.IsAny<string>())).Returns(_mockConfigurationSectionMock.Object);
+        _mockConfigurationMock.Setup(m => m.GetSection(It.IsAny<string>()))
+            .Returns(_mockConfigurationSectionMock.Object);
 
         // Initialize LoggingService with mocked IConfiguration
         _loggingService = new LoggingService(_mockConfigurationMock.Object);
@@ -120,7 +121,7 @@ public class LoggingServiceTests
             Assert.That(logFileLastLine, Does.EndWith($"{LogLevel.Error}: {source}: {message}"));
         });
     }
-    
+
     [TearDown]
     public void TearDown()
     {
