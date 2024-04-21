@@ -18,7 +18,6 @@ public class FundCsvServiceTests
     private Mock<IHoldingService> _holdingServiceMock;
     private Mock<ICsvParsingService<FundCsvRow>> _csvParsingServiceMock;
     private Mock<IDownloaderService> _downloaderServiceMock;
-    private Mock<ILoggingService> _loggerMock;
     private Mock<IConfiguration> _configurationMock;
     private Mock<IConfigurationSection> _configurationSectionMock;
     private IFundCsvService _fundCsvService;
@@ -38,16 +37,14 @@ public class FundCsvServiceTests
         _holdingServiceMock = new Mock<IHoldingService>();
         _csvParsingServiceMock = new Mock<ICsvParsingService<FundCsvRow>>();
         _downloaderServiceMock = new Mock<IDownloaderService>();
-        var unitOfWorkMock = new Mock<IUnitOfWork>();
-        _loggerMock = new Mock<ILoggingService>();
 
         // Initialize FundCsvService with mocked dependencies
         _fundCsvService = new FundCsvService(
             _holdingServiceMock.Object,
             _csvParsingServiceMock.Object,
             _downloaderServiceMock.Object,
-            unitOfWorkMock.Object,
-            _loggerMock.Object,
+            new Mock<IUnitOfWork>().Object,
+            new Mock<ILoggingService>().Object,
             _configurationMock.Object
         );
     }
@@ -95,6 +92,7 @@ public class FundCsvServiceTests
             .ReturnsAsync((string)null!);
 
         // Act & Assert
+        Assert.That(() => _fundCsvService.UpdateHoldings(), Throws.Exception.With.Message.EqualTo("Failed to download csv"));
         Assert.ThrowsAsync<Exception>(() => _fundCsvService.UpdateHoldings());
     }
 
@@ -111,6 +109,7 @@ public class FundCsvServiceTests
             .Returns((List<FundCsvRow>)null!);
 
         // Act & Assert
+        Assert.That(() => _fundCsvService.UpdateHoldings(), Throws.Exception.With.Message.EqualTo("Failed to parse csv"));
         Assert.ThrowsAsync<Exception>(() => _fundCsvService.UpdateHoldings());
     }
 
