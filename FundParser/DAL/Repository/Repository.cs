@@ -15,31 +15,29 @@ namespace FundParser.DAL.Repository
             _dbSet = _context.Set<TEntity>();
         }
 
-        public async virtual Task<TEntity> GetByID(int id, CancellationToken cancellationToken = default)
+        public virtual async Task<TEntity?> GetByID(int id, CancellationToken cancellationToken = default)
         {
-            TEntity entity = await _dbSet.FindAsync([id], cancellationToken: cancellationToken) 
-                ?? throw new Exception("Entity with given Id does not exist.");
-            return entity;
+            return await _dbSet.FindAsync([id], cancellationToken: cancellationToken);
         }
 
         public virtual async Task<TEntity> Insert(TEntity entity, CancellationToken cancellationToken = default)
         {
-            if (entity == null)
-            {
-                throw new Exception("Argument entity is null");
-            }
+            ArgumentNullException.ThrowIfNull(entity);
 
             return (await _dbSet.AddAsync(entity, cancellationToken)).Entity;
         }
 
-        public virtual void Delete(int id)
+        public virtual async Task Delete(int id, CancellationToken cancellationToken = default)
         {
-            TEntity entityToDelete = _dbSet.Find(id) ?? throw new Exception("Entity with given Id does not exist.");
-            _dbSet.Remove(entityToDelete);
+            TEntity entityToDelete = await _dbSet.FindAsync([id], cancellationToken: cancellationToken) ?? throw new Exception("Entity with given Id does not exist.");
+
+            Delete(entityToDelete);
         }
 
         public virtual void Delete(TEntity entityToDelete)
         {
+            ArgumentNullException.ThrowIfNull(entityToDelete);
+
             if (_context.Entry(entityToDelete).State == EntityState.Detached)
             {
                 _dbSet.Attach(entityToDelete);
@@ -50,10 +48,7 @@ namespace FundParser.DAL.Repository
 
         public virtual void Update(TEntity entityToUpdate)
         {
-            if (entityToUpdate == null)
-            {
-                throw new Exception("Argument entityToUpdate is null.");
-            }
+            ArgumentNullException.ThrowIfNull(entityToUpdate);
 
             _dbSet.Attach(entityToUpdate);
             _context.Entry(entityToUpdate).State = EntityState.Modified;

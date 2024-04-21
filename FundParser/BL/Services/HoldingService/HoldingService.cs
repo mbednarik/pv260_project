@@ -30,6 +30,8 @@ namespace FundParser.BL.Services.HoldingService
 
         public async Task<HoldingDTO> AddHolding(AddHoldingDTO holding, CancellationToken cancellationToken = default)
         {
+            ArgumentNullException.ThrowIfNull(holding);
+
             var existingFund = await _unitOfWork.FundRepository
                 .GetQueryable()
                 .FirstOrDefaultAsync(f => f.Name == holding.Fund.Name, cancellationToken);
