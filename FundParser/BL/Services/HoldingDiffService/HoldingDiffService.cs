@@ -7,11 +7,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FundParser.BL.Services.HoldingDiffService
 {
-    public class HoldingDiffService(IUnitOfWork unitOfWork) : IHoldingDiffService
+    public class HoldingDiffService : IHoldingDiffService
     {
+        private readonly IUnitOfWork _unitOfWork;
+
+        public HoldingDiffService(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
+        
         public async Task<IEnumerable<HoldingDiffDTO>> GetHoldingDiffs(int fundId, DateTime oldHoldingDate, DateTime newHoldingDate, CancellationToken cancellationToken = default)
         {
-            var areHoldingDiffsCalculated = await unitOfWork.HoldingDiffRepository.GetQueryable()
+            var areHoldingDiffsCalculated = await _unitOfWork.HoldingDiffRepository.GetQueryable()
                 .AnyAsync(hd =>
                     hd.FundId == fundId &&
                     hd.OldHoldingDate == oldHoldingDate &&
@@ -23,7 +30,7 @@ namespace FundParser.BL.Services.HoldingDiffService
                 return await CalculateAndStoreHoldingDiffs(fundId, oldHoldingDate, newHoldingDate, cancellationToken);
             }
 
-            return await unitOfWork.HoldingDiffRepository.GetQueryable()
+            return await _unitOfWork.HoldingDiffRepository.GetQueryable()
                 .Where(hd => hd.FundId == fundId)
                 .Where(hd =>
                     hd.OldHolding == null && hd.NewHolding != null && hd.NewHolding.Date == newHoldingDate ||
@@ -37,10 +44,10 @@ namespace FundParser.BL.Services.HoldingDiffService
 
         public async Task<IEnumerable<HoldingDiffDTO>> CalculateAndStoreHoldingDiffs(int fundId, DateTime oldHoldingsDate, DateTime newHoldingsDate, CancellationToken cancellationToken = default)
         {
-            var oldHoldings = unitOfWork.HoldingRepository.GetQueryable()
+            var oldHoldings = _unitOfWork.HoldingRepository.GetQueryable()
                 .Where(h => h.FundId == fundId)
                 .Where(h => h.Date == oldHoldingsDate);
-            var newHoldings = unitOfWork.HoldingRepository.GetQueryable()
+            var newHoldings = _unitOfWork.HoldingRepository.GetQueryable()
                 .Where(h => h.FundId == fundId)
                 .Where(h => h.Date == newHoldingsDate);
 
@@ -48,10 +55,10 @@ namespace FundParser.BL.Services.HoldingDiffService
 
             foreach (var holdingDiff in holdingDiffs)
             {
-                await unitOfWork.HoldingDiffRepository.Insert(holdingDiff, cancellationToken);
+                await _unitOfWork.HoldingDiffRepository.Insert(holdingDiff, cancellationToken);
             }
 
-            await unitOfWork.CommitAsync(cancellationToken);
+            await _unitOfWork.CommitAsync(cancellationToken);
 
             return holdingDiffs.Select(GetHoldingDiffDto);
         }
