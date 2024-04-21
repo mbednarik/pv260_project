@@ -1,10 +1,10 @@
+import { Container } from "@mantine/core";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { Container } from "@mantine/core";
 import { ErrorFallback } from "~/components/Fallback/ErrorFallback";
-import { HoldingDiffs } from "~/components/HoldingDiffs/HoldingDiffs";
 import { LoadingFallback } from "~/components/Fallback/LoadingFallback";
+import { HoldingDiffsWrapper } from "~/components/HoldingDiffs/HoldingDiffsWrapper";
 
 const App = () => (
 	<Container h="100vh">
@@ -12,7 +12,7 @@ const App = () => (
 			{({ reset }) => (
 				<ErrorBoundary onReset={reset} fallbackRender={ErrorFallback}>
 					<Suspense fallback={<LoadingFallback />}>
-						<HoldingDiffs />
+						<HoldingDiffsWrapper />
 					</Suspense>
 				</ErrorBoundary>
 			)}

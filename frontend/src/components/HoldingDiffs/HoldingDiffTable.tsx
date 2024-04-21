@@ -1,6 +1,6 @@
 import { Box, Table } from "@mantine/core";
-import { HoldingDiff } from "~/types/holdingDiff";
 import { HoldingDiffTableRow } from "~/components/HoldingDiffs/HoldingDiffTableRow";
+import { HoldingDiff } from "~/types/holdingDiff";
 
 type HoldingDiffTableProps = {
 	holdingDiffs: HoldingDiff[];

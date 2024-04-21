@@ -1,7 +1,7 @@
 export type HoldingDiffsQueryParams = {
-	fundId: number;
-	oldHoldingDate: string;
-	newHoldingDate: string;
+	fundId: string;
+	oldHoldingDate: Date;
+	newHoldingDate: Date;
 };
 
 export type HoldingDiff = {
