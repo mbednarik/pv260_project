@@ -14,7 +14,7 @@ namespace FundParser.BL.Tests.Services;
 [TestFixture]
 public class HoldingServiceTests
 {
-    public class GetHoldings : HoldingServiceTestsBase
+    public class GetHoldingsTests : HoldingServiceTestsBase
     {
         [Test]
         public async Task GetHoldings_ValidData_ReturnsHoldings()
