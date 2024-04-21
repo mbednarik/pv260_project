@@ -42,7 +42,7 @@ namespace FundParser.BL.Services.HoldingDiffService
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<HoldingDiffDTO>> CalculateHoldingDiffs(int fundId, DateTime oldHoldingsDate, DateTime newHoldingsDate, CancellationToken cancellationToken = default)
+        private async Task<IEnumerable<HoldingDiffDTO>> CalculateHoldingDiffs(int fundId, DateTime oldHoldingsDate, DateTime newHoldingsDate, CancellationToken cancellationToken = default)
         {
             var oldHoldings = _unitOfWork.HoldingRepository.GetQueryable()
                 .Where(h => h.FundId == fundId)
