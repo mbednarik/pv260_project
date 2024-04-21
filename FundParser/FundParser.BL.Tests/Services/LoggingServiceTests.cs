@@ -8,7 +8,7 @@ namespace FundParser.BL.Tests.Services;
 [TestFixture]
 public class LoggingServiceTests
 {
-    public class ConstructorTests : LoggingServiceTestsBase
+    public class ConstructorTests : LoggingServiceTestsUninitializedBase
     {
         [Test]
         public void Constructor_InvalidConfiguration_ThrowsException()
@@ -19,16 +19,19 @@ public class LoggingServiceTests
             // Act & Assert
             Assert.Throws<InvalidOperationException>(() => new LoggingService(mockConfigurationMock.Object));
         }
-        
+
         [Test]
         public void Constructor_ValidConfiguration_CreatesLogFolder()
         {
+            // Initialize LoggingService with mocked IConfiguration
+            var loggingService = new LoggingService(mockConfigurationMock.Object);
+
             // Arrange & Act & Assert
             Assert.That(Directory.Exists(testLogFolderPath), Is.True);
         }
     }
 
-    public class LogInformationTests : LoggingServiceTestsBase
+    public class LogInformationTests : LoggingServiceTestsInitializedBase
     {
         [Test]
         public async Task LogInformation_ValidMessage_WritesToLogFile()
@@ -55,7 +58,7 @@ public class LoggingServiceTests
         }
     }
 
-    public class LogWarningTests : LoggingServiceTestsBase
+    public class LogWarningTests : LoggingServiceTestsInitializedBase
     {
         [Test]
         public async Task LogWarning_ValidMessage_WritesToLogFile()
@@ -82,7 +85,7 @@ public class LoggingServiceTests
         }
     }
 
-    public class LogErrorTests : LoggingServiceTestsBase
+    public class LogErrorTests : LoggingServiceTestsInitializedBase
     {
         [Test]
         public async Task LogError_ValidMessage_WritesToLogFile()
@@ -109,13 +112,11 @@ public class LoggingServiceTests
         }
     }
 
-
     public class LoggingServiceTestsBase
     {
         protected string testLogFolderPath;
         protected Mock<IConfiguration> mockConfigurationMock;
         protected Mock<IConfigurationSection> mockConfigurationSectionMock;
-        protected LoggingService loggingService;
 
         [SetUp]
         public void SetUp()
@@ -130,9 +131,6 @@ public class LoggingServiceTests
             mockConfigurationMock = new Mock<IConfiguration>();
             mockConfigurationMock.Setup(m => m.GetSection(It.IsAny<string>()))
                 .Returns(mockConfigurationSectionMock.Object);
-
-            // Initialize LoggingService with mocked IConfiguration
-            loggingService = new LoggingService(mockConfigurationMock.Object);
         }
 
         [TearDown]
@@ -143,5 +141,20 @@ public class LoggingServiceTests
                 Directory.Delete(testLogFolderPath, true);
             }
         }
+    }
+
+    public class LoggingServiceTestsInitializedBase : LoggingServiceTestsBase
+    {
+        protected LoggingService loggingService;
+
+        [SetUp]
+        public void SetUp()
+        {
+            loggingService = new LoggingService(mockConfigurationMock.Object);
+        }
+    }
+
+    public class LoggingServiceTestsUninitializedBase : LoggingServiceTestsBase
+    {
     }
 }
