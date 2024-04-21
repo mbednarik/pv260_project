@@ -138,10 +138,9 @@ public class LoggingServiceTests
         [TearDown]
         public void TearDown()
         {
-            var logFilePath = Path.Combine(testLogFolderPath, $"{DateTime.Now:yyyy-MM-dd}.log");
-            if (File.Exists(logFilePath))
+            if (Directory.Exists(testLogFolderPath))
             {
-                File.Delete(logFilePath);
+                Directory.Delete(testLogFolderPath);
             }
         }
     }
