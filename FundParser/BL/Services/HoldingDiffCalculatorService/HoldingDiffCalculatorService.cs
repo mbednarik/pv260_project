@@ -1,10 +1,10 @@
 using FundParser.DAL.Models;
 
-namespace FundParser.BL.Utils.HoldingDiffCalculator;
+namespace FundParser.BL.Services.HoldingDiffCalculatorService;
 
-public static class HoldingDiffCalculator
+public class HoldingDiffCalculatorService : IHoldingDiffCalculatorService
 {
-    public static List<HoldingDiff> CalculateHoldingDiffs(IEnumerable<Holding> oldHoldings, IEnumerable<Holding> newHoldings)
+    public List<HoldingDiff> CalculateHoldingDiffs(IEnumerable<Holding> oldHoldings, IEnumerable<Holding> newHoldings)
     {
         var oldHoldingsList = oldHoldings.ToList();
         var newHoldingsList = newHoldings.ToList();
@@ -20,7 +20,7 @@ public static class HoldingDiffCalculator
         }).ToList();
     }
         
-    private static IEnumerable<HoldingDiff> CompareHoldings(IReadOnlyCollection<Holding> oldHoldings, IReadOnlyCollection<Holding> newHoldings)
+    private IEnumerable<HoldingDiff> CompareHoldings(IReadOnlyCollection<Holding> oldHoldings, IReadOnlyCollection<Holding> newHoldings)
         {
             var oldHoldingDict = oldHoldings.ToDictionary(h => h.CompanyId);
             var newHoldingDict = newHoldings.ToDictionary(h => h.CompanyId);
@@ -39,7 +39,7 @@ public static class HoldingDiffCalculator
             return holdingDiffs;
         }
 
-        private static HoldingDiff GetNewHoldingDiff(Holding newHolding)
+        private HoldingDiff GetNewHoldingDiff(Holding newHolding)
         {
             return new HoldingDiff
             {
@@ -53,7 +53,7 @@ public static class HoldingDiffCalculator
             };
         }
 
-        private static HoldingDiff GetOldHoldingDiff(Holding oldHolding)
+        private HoldingDiff GetOldHoldingDiff(Holding oldHolding)
         {
             return new HoldingDiff
             {
@@ -67,7 +67,7 @@ public static class HoldingDiffCalculator
             };
         }
 
-        private static HoldingDiff GetHoldingDiff(Holding oldHolding, Holding newHolding)
+        private HoldingDiff GetHoldingDiff(Holding oldHolding, Holding newHolding)
         {
             return new HoldingDiff
             {

@@ -1,5 +1,5 @@
 ﻿using FundParser.BL.DTOs;
-using FundParser.BL.Utils.HoldingDiffCalculator;
+using FundParser.BL.Services.HoldingDiffCalculatorService;
 using FundParser.DAL.Models;
 using FundParser.DAL.UnitOfWork;
 
@@ -10,10 +10,12 @@ namespace FundParser.BL.Services.HoldingDiffService
     public class HoldingDiffService : IHoldingDiffService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IHoldingDiffCalculatorService _holdingDiffCalculatorService;
 
-        public HoldingDiffService(IUnitOfWork unitOfWork)
+        public HoldingDiffService(IUnitOfWork unitOfWork, IHoldingDiffCalculatorService holdingDiffCalculatorServiceService)
         {
             _unitOfWork = unitOfWork;
+            _holdingDiffCalculatorService = holdingDiffCalculatorServiceService;
         }
         
         public async Task<IEnumerable<HoldingDiffDTO>> GetHoldingDiffs(int fundId, DateTime oldHoldingDate, DateTime newHoldingDate, CancellationToken cancellationToken = default)
@@ -51,7 +53,7 @@ namespace FundParser.BL.Services.HoldingDiffService
                 .Where(h => h.FundId == fundId)
                 .Where(h => h.Date == newHoldingsDate);
 
-            var holdingDiffs = HoldingDiffCalculator.CalculateHoldingDiffs(oldHoldings, newHoldings);
+            var holdingDiffs = _holdingDiffCalculatorService.CalculateHoldingDiffs(oldHoldings, newHoldings);
 
             foreach (var holdingDiff in holdingDiffs)
             {
