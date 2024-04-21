@@ -53,16 +53,26 @@ namespace FundParser.BL.Services.HoldingDiffService
                 .Where(h => h.FundId == fundId)
                 .Where(h => h.Date == newHoldingsDate);
 
-            var holdingDiffs = _holdingDiffCalculatorService.CalculateHoldingDiffs(oldHoldings, newHoldings);
+            var holdingDiffs = _holdingDiffCalculatorService.CalculateHoldingDiffs(oldHoldings, newHoldings).Select(
+                hd =>
+                {
+                    hd.OldHoldingDate = oldHoldingsDate;
+                    hd.NewHoldingDate = newHoldingsDate;
 
-            foreach (var holdingDiff in holdingDiffs)
+                    return hd;
+                }
+            );
+            
+            var holdingDiffsList = holdingDiffs.ToList();
+
+            foreach (var holdingDiff in holdingDiffsList)
             {
                 await _unitOfWork.HoldingDiffRepository.Insert(holdingDiff, cancellationToken);
             }
 
             await _unitOfWork.CommitAsync(cancellationToken);
 
-            return holdingDiffs.Select(GetHoldingDiffDto);
+            return holdingDiffsList.Select(GetHoldingDiffDto);
         }
 
         private static HoldingDiffDTO GetHoldingDiffDto(HoldingDiff hd)
