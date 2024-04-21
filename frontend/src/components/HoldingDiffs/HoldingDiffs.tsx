@@ -1,18 +1,16 @@
-import { Box } from "@mantine/core";
-import useHoldingDiffs from "~/hooks/useHoldingDiffs";
+import { Alert } from "@mantine/core";
 import { HoldingDiffTable } from "~/components/HoldingDiffs/HoldingDiffTable";
+import useHoldingDiffs from "~/hooks/useHoldingDiffs";
+import { HoldingDiffsQueryParams } from "~/types/holdingDiff";
 
-export const HoldingDiffs = () => {
-	// TODO: fix this, hardcoded for now
-	const { data } = useHoldingDiffs({
-		fundId: 2,
-		oldHoldingDate: "2024-03-15",
-		newHoldingDate: "2024-03-15",
-	});
+type HoldingDiffsProps = HoldingDiffsQueryParams;
 
-	return (
-		<Box p="xl">
-			<HoldingDiffTable holdingDiffs={data} />
-		</Box>
+export const HoldingDiffs = (props: HoldingDiffsProps) => {
+	const { data: holdingDiffs } = useHoldingDiffs(props);
+
+	return holdingDiffs.length === 0 ? (
+		<Alert>No holding diffs found</Alert>
+	) : (
+		<HoldingDiffTable holdingDiffs={holdingDiffs} />
 	);
 };

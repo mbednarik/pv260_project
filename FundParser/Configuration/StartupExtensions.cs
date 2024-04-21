@@ -3,6 +3,7 @@ using AutoMapper;
 using FundParser.BL.Services.CsvParsingService;
 using FundParser.BL.Services.DownloaderService;
 using FundParser.BL.Services.FundCsvService;
+using FundParser.BL.Services.HoldingDiffCalculatorService;
 using FundParser.BL.Services.HoldingDiffService;
 using FundParser.BL.Services.HoldingService;
 using FundParser.BL.Services.LoggingService;
@@ -25,6 +26,7 @@ namespace FundParser.Configuration
             services.AddSingleton<IDownloaderService, DownloaderService>();
             services.AddSingleton<ILoggingService, LoggingService>();
             services.AddSingleton<ICsvParsingService<FundCsvRow>, CsvParsingService<FundCsvRow>>();
+            services.AddSingleton<IHoldingDiffCalculatorService, HoldingDiffCalculatorService>();
 
             //Repository DI Setup
             services.AddScoped<IRepository<Holding>, Repository<Holding>>();

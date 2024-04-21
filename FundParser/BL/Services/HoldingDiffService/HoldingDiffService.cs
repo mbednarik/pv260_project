@@ -1,4 +1,5 @@
 ﻿using FundParser.BL.DTOs;
+using FundParser.BL.Services.HoldingDiffCalculatorService;
 using FundParser.DAL.Models;
 using FundParser.DAL.UnitOfWork;
 
@@ -9,12 +10,14 @@ namespace FundParser.BL.Services.HoldingDiffService
     public class HoldingDiffService : IHoldingDiffService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IHoldingDiffCalculatorService _holdingDiffCalculatorService;
 
-        public HoldingDiffService(IUnitOfWork unitOfWork)
+        public HoldingDiffService(IUnitOfWork unitOfWork, IHoldingDiffCalculatorService holdingDiffCalculatorServiceService)
         {
             _unitOfWork = unitOfWork;
+            _holdingDiffCalculatorService = holdingDiffCalculatorServiceService;
         }
-
+        
         public async Task<IEnumerable<HoldingDiffDTO>> GetHoldingDiffs(int fundId, DateTime oldHoldingDate, DateTime newHoldingDate, CancellationToken cancellationToken = default)
         {
             var areHoldingDiffsCalculated = await _unitOfWork.HoldingDiffRepository.GetQueryable()
@@ -26,7 +29,7 @@ namespace FundParser.BL.Services.HoldingDiffService
 
             if (!areHoldingDiffsCalculated)
             {
-                return await CalculateAndStoreHoldingDiffs(fundId, oldHoldingDate, newHoldingDate, cancellationToken);
+                return await CalculateHoldingDiffs(fundId, oldHoldingDate, newHoldingDate, cancellationToken);
             }
 
             return await _unitOfWork.HoldingDiffRepository.GetQueryable()
@@ -37,11 +40,11 @@ namespace FundParser.BL.Services.HoldingDiffService
                     hd.OldHolding != null && hd.NewHolding != null && hd.OldHolding.Date == oldHoldingDate && hd.NewHolding.Date == newHoldingDate)
                 .Include(hd => hd.Fund)
                 .Include(hd => hd.Company)
-                .Select(hd => GetHoldingDiffDTO(hd))
+                .Select(hd => GetHoldingDiffDto(hd))
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<HoldingDiffDTO>> CalculateAndStoreHoldingDiffs(int fundId, DateTime oldHoldingsDate, DateTime newHoldingsDate, CancellationToken cancellationToken = default)
+        private async Task<IEnumerable<HoldingDiffDTO>> CalculateHoldingDiffs(int fundId, DateTime oldHoldingsDate, DateTime newHoldingsDate, CancellationToken cancellationToken = default)
         {
             var oldHoldings = _unitOfWork.HoldingRepository.GetQueryable()
                 .Where(h => h.FundId == fundId)
@@ -50,92 +53,29 @@ namespace FundParser.BL.Services.HoldingDiffService
                 .Where(h => h.FundId == fundId)
                 .Where(h => h.Date == newHoldingsDate);
 
-            var holdingDiffs = CompareHoldings(oldHoldings, newHoldings)
-                .Select(hd =>
+            var holdingDiffs = _holdingDiffCalculatorService.CalculateHoldingDiffs(oldHoldings, newHoldings).Select(
+                hd =>
                 {
                     hd.OldHoldingDate = oldHoldingsDate;
                     hd.NewHoldingDate = newHoldingsDate;
 
                     return hd;
-                })
-                .ToList();
+                }
+            );
+            
+            var holdingDiffsList = holdingDiffs.ToList();
 
-            foreach (var holdingDiff in holdingDiffs)
+            foreach (var holdingDiff in holdingDiffsList)
             {
                 await _unitOfWork.HoldingDiffRepository.Insert(holdingDiff, cancellationToken);
             }
 
             await _unitOfWork.CommitAsync(cancellationToken);
 
-            return holdingDiffs.Select(GetHoldingDiffDTO);
+            return holdingDiffsList.Select(GetHoldingDiffDto);
         }
 
-        private static IEnumerable<HoldingDiff> CompareHoldings(IEnumerable<Holding> oldHoldings, IEnumerable<Holding> newHoldings)
-        {
-            var oldHoldingsArray = oldHoldings as Holding[] ?? oldHoldings.ToArray();
-            var newHoldingsArray = newHoldings as Holding[] ?? newHoldings.ToArray();
-
-            var oldHoldingDict = oldHoldingsArray.ToDictionary(h => h.CompanyId);
-            var newHoldingDict = newHoldingsArray.ToDictionary(h => h.CompanyId);
-
-            var holdingDiffs = oldHoldingsArray
-                .Select(h =>
-                {
-                    var newHolding = newHoldingDict.GetValueOrDefault(h.CompanyId);
-
-                    return newHolding == null ? GetOldHoldingDiff(h) : GetHoldingDiff(h, newHolding);
-                })
-                .Concat(newHoldingsArray
-                    .Where(h => !oldHoldingDict.ContainsKey(h.CompanyId))
-                    .Select(GetNewHoldingDiff));
-
-            return holdingDiffs;
-        }
-
-        private static HoldingDiff GetNewHoldingDiff(Holding newHolding)
-        {
-            return new HoldingDiff
-            {
-                FundId = newHolding.FundId,
-                CompanyId = newHolding.CompanyId,
-                NewHoldingId = newHolding.Id,
-                OldShares = 0,
-                SharesChange = newHolding.Shares,
-                OldWeight = 0,
-                WeightChange = newHolding.Weight
-            };
-        }
-
-        private static HoldingDiff GetOldHoldingDiff(Holding oldHolding)
-        {
-            return new HoldingDiff
-            {
-                FundId = oldHolding.FundId,
-                CompanyId = oldHolding.CompanyId,
-                OldHoldingId = oldHolding.Id,
-                OldShares = oldHolding.Shares,
-                SharesChange = -oldHolding.Shares,
-                OldWeight = oldHolding.Weight,
-                WeightChange = -oldHolding.Weight
-            };
-        }
-
-        private static HoldingDiff GetHoldingDiff(Holding oldHolding, Holding newHolding)
-        {
-            return new HoldingDiff
-            {
-                FundId = oldHolding.FundId,
-                CompanyId = oldHolding.CompanyId,
-                OldHoldingId = oldHolding.Id,
-                NewHoldingId = newHolding.Id,
-                OldShares = oldHolding.Shares,
-                SharesChange = newHolding.Shares - oldHolding.Shares,
-                OldWeight = oldHolding.Weight,
-                WeightChange = newHolding.Weight - oldHolding.Weight
-            };
-        }
-
-        private static HoldingDiffDTO GetHoldingDiffDTO(HoldingDiff hd)
+        private static HoldingDiffDTO GetHoldingDiffDto(HoldingDiff hd)
         {
             return new HoldingDiffDTO
             {

@@ -13,9 +13,9 @@ namespace FundParser.DAL.Models
 
         public int? NewHoldingId { get; set; }
 
-        public DateTime OldHoldingDate { get; set; }
+        public DateTime? OldHoldingDate { get; set; }
 
-        public DateTime NewHoldingDate { get; set; }
+        public DateTime? NewHoldingDate { get; set; }
 
         [Required]
         public decimal OldShares { get; set; }
