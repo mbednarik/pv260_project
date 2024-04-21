@@ -96,9 +96,12 @@ public class FundCsvServiceTests
             .ReturnsAsync((string)null!);
 
         // Act & Assert
-        Assert.That(() => _fundCsvService.UpdateHoldings(),
-            Throws.Exception.With.Message.EqualTo("Failed to download csv"));
-        Assert.ThrowsAsync<Exception>(() => _fundCsvService.UpdateHoldings());
+        Assert.Multiple(() =>
+        {
+            Assert.That(() => _fundCsvService.UpdateHoldings(),
+                Throws.Exception.With.Message.EqualTo("Failed to download csv"));
+            Assert.That(() => _fundCsvService.UpdateHoldings(), Throws.Exception);
+        });
     }
 
     [Test]
@@ -112,10 +115,11 @@ public class FundCsvServiceTests
             .ReturnsAsync(csvString);
         _csvParsingServiceMock.Setup(m => m.ParseString(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .Returns((List<FundCsvRow>)null!);
+
+
+        // Act & Assert
         Assert.Multiple(() =>
         {
-
-            // Act & Assert
             Assert.That(() => _fundCsvService.UpdateHoldings(),
                 Throws.Exception.With.Message.EqualTo("Failed to parse csv"));
             Assert.That(() => _fundCsvService.UpdateHoldings(), Throws.Exception);
@@ -129,6 +133,6 @@ public class FundCsvServiceTests
         _configurationSectionMock.SetupGet(m => m.Value).Returns((string)null!);
 
         // Act & Assert
-        Assert.That(()=> _fundCsvService.UpdateHoldings(), Throws.Exception);
+        Assert.That(() => _fundCsvService.UpdateHoldings(), Throws.Exception);
     }
 }
