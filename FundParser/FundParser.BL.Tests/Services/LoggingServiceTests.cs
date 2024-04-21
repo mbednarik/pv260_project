@@ -140,7 +140,7 @@ public class LoggingServiceTests
         {
             if (Directory.Exists(testLogFolderPath))
             {
-                Directory.Delete(testLogFolderPath);
+                Directory.Delete(testLogFolderPath, true);
             }
         }
     }
