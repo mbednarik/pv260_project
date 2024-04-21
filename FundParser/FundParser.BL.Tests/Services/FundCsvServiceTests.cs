@@ -37,11 +37,10 @@ public class FundCsvServiceTests
         public void UpdateHoldings_ParseFailed_ThrowsException()
         {
             // Arrange
-            const string csvString = "Fund,Cusip,Ticker,Company,Shares,MarketValue,Weight,Date\n" +
-                                     "ARKK,12345,ABC,Test Company,1000,$10000,10%,01/01/2022";
+            const string testCsvString = "testCsvString";
             downloaderServiceMock.Setup(m => m.DownloadTextFileAsStringAsync(It.IsAny<string>(),
                     It.IsAny<List<(string, string)>>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(csvString);
+                .ReturnsAsync(testCsvString);
             csvParsingServiceMock.Setup(m => m.ParseString(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Returns((List<FundCsvRow>)null!);
 
