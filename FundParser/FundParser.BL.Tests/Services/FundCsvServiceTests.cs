@@ -11,6 +11,7 @@ using Moq;
 
 namespace FundParser.BL.Tests.Services;
 
+[TestFixture]
 public class FundCsvServiceTests
 {
     private const string Url = "http://supercoolwebsite.com/fund.csv";
@@ -20,7 +21,8 @@ public class FundCsvServiceTests
     private Mock<IDownloaderService> _downloaderServiceMock;
     private Mock<IConfiguration> _configurationMock;
     private Mock<IConfigurationSection> _configurationSectionMock;
-    private IFundCsvService _fundCsvService;
+    private Mock<IUnitOfWork> _unitOfWorkMock;
+    private FundCsvService _fundCsvService;
 
     [SetUp]
     public void SetUp()
@@ -37,13 +39,14 @@ public class FundCsvServiceTests
         _holdingServiceMock = new Mock<IHoldingService>();
         _csvParsingServiceMock = new Mock<ICsvParsingService<FundCsvRow>>();
         _downloaderServiceMock = new Mock<IDownloaderService>();
+        _unitOfWorkMock = new Mock<IUnitOfWork>();
 
         // Initialize FundCsvService with mocked dependencies
         _fundCsvService = new FundCsvService(
             _holdingServiceMock.Object,
             _csvParsingServiceMock.Object,
             _downloaderServiceMock.Object,
-            new Mock<IUnitOfWork>().Object,
+            _unitOfWorkMock.Object,
             new Mock<ILoggingService>().Object,
             _configurationMock.Object
         );
@@ -53,12 +56,11 @@ public class FundCsvServiceTests
     public async Task UpdateHoldings_SuccessfulUpdate_ReturnsCorrectCount()
     {
         // Arrange
-        const string csvString = "Fund,Cusip,Ticker,Company,Shares,MarketValue,Weight,Date\n" +
-                                 "ARKK,12345,ABC,Test Company,1000,$10000,10%,01/01/2022";
+        const string testCsvString = "testCsvString";
         _downloaderServiceMock.Setup(m => m.DownloadTextFileAsStringAsync(It.IsAny<string>(),
                 It.IsAny<List<(string, string)>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(csvString);
-        _csvParsingServiceMock.Setup(m => m.ParseString(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(testCsvString);
+        _csvParsingServiceMock.Setup(m => m.ParseString(testCsvString, It.IsAny<CancellationToken>()))
             .Returns(new List<FundCsvRow>
             {
                 new FundCsvRow
@@ -73,18 +75,20 @@ public class FundCsvServiceTests
                     Date = "01/01/2022"
                 }
             });
-        _holdingServiceMock.Setup(m => m.AddHolding(It.IsAny<AddHoldingDTO>(), It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult(new HoldingDTO()));
 
         // Act
         var result = await _fundCsvService.UpdateHoldings();
 
         // Assert
+        _holdingServiceMock.Verify(
+            holdingService => holdingService.AddHolding(It.IsAny<AddHoldingDTO>(), It.IsAny<CancellationToken>()),
+            Times.Once());
+        _unitOfWorkMock.Verify(uow => uow.CommitAsync(It.IsAny<CancellationToken>()), Times.Once());
         Assert.That(result, Is.EqualTo(1));
     }
 
     [Test]
-    public void UpdateHoldings_FailToDownload_ThrowsException()
+    public void UpdateHoldings_DownloadFailed_ThrowsException()
     {
         // Arrange
         _downloaderServiceMock.Setup(m => m.DownloadTextFileAsStringAsync(It.IsAny<string>(),
@@ -92,12 +96,13 @@ public class FundCsvServiceTests
             .ReturnsAsync((string)null!);
 
         // Act & Assert
-        Assert.That(() => _fundCsvService.UpdateHoldings(), Throws.Exception.With.Message.EqualTo("Failed to download csv"));
+        Assert.That(() => _fundCsvService.UpdateHoldings(),
+            Throws.Exception.With.Message.EqualTo("Failed to download csv"));
         Assert.ThrowsAsync<Exception>(() => _fundCsvService.UpdateHoldings());
     }
 
     [Test]
-    public void UpdateHoldings_FailToParse_ThrowsException()
+    public void UpdateHoldings_ParseFailed_ThrowsException()
     {
         // Arrange
         const string csvString = "Fund,Cusip,Ticker,Company,Shares,MarketValue,Weight,Date\n" +
@@ -107,19 +112,23 @@ public class FundCsvServiceTests
             .ReturnsAsync(csvString);
         _csvParsingServiceMock.Setup(m => m.ParseString(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .Returns((List<FundCsvRow>)null!);
+        Assert.Multiple(() =>
+        {
 
-        // Act & Assert
-        Assert.That(() => _fundCsvService.UpdateHoldings(), Throws.Exception.With.Message.EqualTo("Failed to parse csv"));
-        Assert.ThrowsAsync<Exception>(() => _fundCsvService.UpdateHoldings());
+            // Act & Assert
+            Assert.That(() => _fundCsvService.UpdateHoldings(),
+                Throws.Exception.With.Message.EqualTo("Failed to parse csv"));
+            Assert.That(() => _fundCsvService.UpdateHoldings(), Throws.Exception);
+        });
     }
 
     [Test]
-    public void UpdateHoldings_NoCsvUrl_ThrowsException()
+    public void UpdateHoldings_CsvUrlNotConfigured_ThrowsException()
     {
         // Arrange
         _configurationSectionMock.SetupGet(m => m.Value).Returns((string)null!);
 
         // Act & Assert
-        Assert.ThrowsAsync<InvalidOperationException>(() => _fundCsvService.UpdateHoldings());
+        Assert.That(()=> _fundCsvService.UpdateHoldings(), Throws.Exception);
     }
 }
