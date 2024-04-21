@@ -53,41 +53,6 @@ public class FundCsvServiceTests
     }
 
     [Test]
-    public async Task UpdateHoldings_SuccessfulUpdate_ReturnsCorrectCount()
-    {
-        // Arrange
-        const string testCsvString = "testCsvString";
-        _downloaderServiceMock.Setup(m => m.DownloadTextFileAsStringAsync(It.IsAny<string>(),
-                It.IsAny<List<(string, string)>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(testCsvString);
-        _csvParsingServiceMock.Setup(m => m.ParseString(testCsvString, It.IsAny<CancellationToken>()))
-            .Returns(new List<FundCsvRow>
-            {
-                new FundCsvRow
-                {
-                    Fund = "ARKK",
-                    Cusip = "12345",
-                    Ticker = "ABC",
-                    Company = "Test Company",
-                    Shares = "1000",
-                    MarketValue = "$10000",
-                    Weight = "10%",
-                    Date = "01/01/2022"
-                }
-            });
-
-        // Act
-        var result = await _fundCsvService.UpdateHoldings();
-
-        // Assert
-        _holdingServiceMock.Verify(
-            holdingService => holdingService.AddHolding(It.IsAny<AddHoldingDTO>(), It.IsAny<CancellationToken>()),
-            Times.Once());
-        _unitOfWorkMock.Verify(uow => uow.CommitAsync(It.IsAny<CancellationToken>()), Times.Once());
-        Assert.That(result, Is.EqualTo(1));
-    }
-
-    [Test]
     public void UpdateHoldings_DownloadFailed_ThrowsException()
     {
         // Arrange
@@ -134,5 +99,40 @@ public class FundCsvServiceTests
 
         // Act & Assert
         Assert.That(() => _fundCsvService.UpdateHoldings(), Throws.Exception);
+    }
+
+    [Test]
+    public async Task UpdateHoldings_SuccessfulUpdate_ReturnsCorrectCount()
+    {
+        // Arrange
+        const string testCsvString = "testCsvString";
+        _downloaderServiceMock.Setup(m => m.DownloadTextFileAsStringAsync(It.IsAny<string>(),
+                It.IsAny<List<(string, string)>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(testCsvString);
+        _csvParsingServiceMock.Setup(m => m.ParseString(testCsvString, It.IsAny<CancellationToken>()))
+            .Returns(new List<FundCsvRow>
+            {
+                new FundCsvRow
+                {
+                    Fund = "ARKK",
+                    Cusip = "12345",
+                    Ticker = "ABC",
+                    Company = "Test Company",
+                    Shares = "1000",
+                    MarketValue = "$10000",
+                    Weight = "10%",
+                    Date = "01/01/2022"
+                }
+            });
+
+        // Act
+        var result = await _fundCsvService.UpdateHoldings();
+
+        // Assert
+        _holdingServiceMock.Verify(
+            holdingService => holdingService.AddHolding(It.IsAny<AddHoldingDTO>(), It.IsAny<CancellationToken>()),
+            Times.Once());
+        _unitOfWorkMock.Verify(uow => uow.CommitAsync(It.IsAny<CancellationToken>()), Times.Once());
+        Assert.That(result, Is.EqualTo(1));
     }
 }
