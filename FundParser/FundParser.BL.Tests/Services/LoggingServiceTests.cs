@@ -8,127 +8,141 @@ namespace FundParser.BL.Tests.Services;
 [TestFixture]
 public class LoggingServiceTests
 {
-    private readonly string _testLogFolderPath = Path.Combine(Path.GetTempPath(), "TestLogs");
-    private Mock<IConfiguration> _mockConfigurationMock;
-    private Mock<IConfigurationSection> _mockConfigurationSectionMock;
-    private ILoggingService _loggingService;
-
-    [SetUp]
-    public void SetUp()
+    public class ConstructorTests : LoggingServiceTestsBase
     {
-        // Mock IConfigurationSection
-        _mockConfigurationSectionMock = new Mock<IConfigurationSection>();
-        _mockConfigurationSectionMock.SetupGet(m => m.Value).Returns(_testLogFolderPath);
-
-        // Mock IConfiguration
-        _mockConfigurationMock = new Mock<IConfiguration>();
-        _mockConfigurationMock.Setup(m => m.GetSection(It.IsAny<string>()))
-            .Returns(_mockConfigurationSectionMock.Object);
-
-        // Initialize LoggingService with mocked IConfiguration
-        _loggingService = new LoggingService(_mockConfigurationMock.Object);
-    }
-
-
-    [Test]
-    public void Constructor_ValidConfiguration_CreatesLogFolder()
-    {
-        // Arrange & Act & Assert
-        Assert.That(Directory.Exists(_testLogFolderPath), Is.True);
-    }
-
-    [Test]
-    public void Constructor_InvalidConfiguration_ThrowsException()
-    {
-        // Arrange
-        _mockConfigurationSectionMock.SetupGet(m => m.Value).Returns((string)null!);
-
-        // Act & Assert
-        Assert.Throws<InvalidOperationException>(() =>
+        [Test]
+        public void Constructor_ValidConfiguration_CreatesLogFolder()
         {
-            var loggingService = new LoggingService(_mockConfigurationMock.Object);
-        });
+            // Arrange & Act & Assert
+            Assert.That(Directory.Exists(testLogFolderPath), Is.True);
+        }
+
+        [Test]
+        public void Constructor_InvalidConfiguration_ThrowsException()
+        {
+            // Arrange
+            mockConfigurationSectionMock.SetupGet(m => m.Value).Returns((string)null!);
+
+            // Act & Assert
+            Assert.Throws<InvalidOperationException>(() => new LoggingService(mockConfigurationMock.Object));
+        }
     }
 
-    [Test]
-    public async Task LogInformation_ValidMessage_WritesToLogFile()
+    public class LogInformationTests : LoggingServiceTestsBase
     {
-        // Arrange
-        const string message = "Test information message";
-        const string source = "Test information source";
-
-        // Act
-        await _loggingService.LogInformation(message, source);
-
-        // Assert
-        var logFilePath = Path.Combine(_testLogFolderPath, $"{DateTime.Now:yyyy-MM-dd}.log");
-
-        var logFileLines = await File.ReadAllLinesAsync(logFilePath);
-        var logFileLastLine = logFileLines.Last();
-        Assert.Multiple(() =>
+        [Test]
+        public async Task LogInformation_ValidMessage_WritesToLogFile()
         {
-            Assert.That(logFileLastLine, Does.Contain(message));
-            Assert.That(logFileLastLine, Does.Contain(source));
-            Assert.That(logFileLastLine, Does.Contain(LogLevel.Information.ToString()));
-            Assert.That(logFileLastLine, Does.EndWith($"{LogLevel.Information}: {source}: {message}"));
-        });
+            // Arrange
+            const string message = "Test information message";
+            const string source = "Test information source";
+
+            // Act
+            await loggingService.LogInformation(message, source);
+
+            // Assert
+            var logFilePath = Path.Combine(testLogFolderPath, $"{DateTime.Now:yyyy-MM-dd}.log");
+
+            var logFileLines = await File.ReadAllLinesAsync(logFilePath);
+            var logFileLastLine = logFileLines.Last();
+            Assert.Multiple(() =>
+            {
+                Assert.That(logFileLastLine, Does.Contain(message));
+                Assert.That(logFileLastLine, Does.Contain(source));
+                Assert.That(logFileLastLine, Does.Contain(LogLevel.Information.ToString()));
+                Assert.That(logFileLastLine, Does.EndWith($"{LogLevel.Information}: {source}: {message}"));
+            });
+        }
     }
 
-    [Test]
-    public async Task LogWarning_ValidMessage_WritesToLogFile()
+    public class LogWarningTests : LoggingServiceTestsBase
     {
-        // Arrange
-        const string message = "Test warning message";
-        const string source = "Test warning source";
-
-        // Act
-        await _loggingService.LogWarning(message, source);
-
-        // Assert
-        var logFilePath = Path.Combine(_testLogFolderPath, $"{DateTime.Now:yyyy-MM-dd}.log");
-
-        var logFileLines = await File.ReadAllLinesAsync(logFilePath);
-        var logFileLastLine = logFileLines.Last();
-        Assert.Multiple(() =>
+        [Test]
+        public async Task LogWarning_ValidMessage_WritesToLogFile()
         {
-            Assert.That(logFileLastLine, Does.Contain(message));
-            Assert.That(logFileLastLine, Does.Contain(source));
-            Assert.That(logFileLastLine, Does.Contain(LogLevel.Warning.ToString()));
-            Assert.That(logFileLastLine, Does.EndWith($"{LogLevel.Warning}: {source}: {message}"));
-        });
+            // Arrange
+            const string message = "Test warning message";
+            const string source = "Test warning source";
+
+            // Act
+            await loggingService.LogWarning(message, source);
+
+            // Assert
+            var logFilePath = Path.Combine(testLogFolderPath, $"{DateTime.Now:yyyy-MM-dd}.log");
+
+            var logFileLines = await File.ReadAllLinesAsync(logFilePath);
+            var logFileLastLine = logFileLines.Last();
+            Assert.Multiple(() =>
+            {
+                Assert.That(logFileLastLine, Does.Contain(message));
+                Assert.That(logFileLastLine, Does.Contain(source));
+                Assert.That(logFileLastLine, Does.Contain(LogLevel.Warning.ToString()));
+                Assert.That(logFileLastLine, Does.EndWith($"{LogLevel.Warning}: {source}: {message}"));
+            });
+        }
     }
 
-    [Test]
-    public async Task LogError_ValidMessage_WritesToLogFile()
+    public class LogErrorTests : LoggingServiceTestsBase
     {
-        // Arrange
-        const string message = "Test error message";
-        const string source = "Test error source";
-
-        // Act
-        await _loggingService.LogError(message, source);
-
-        // Assert
-        var logFilePath = Path.Combine(_testLogFolderPath, $"{DateTime.Now:yyyy-MM-dd}.log");
-
-        var logFileLines = await File.ReadAllLinesAsync(logFilePath);
-        var logFileLastLine = logFileLines.Last();
-        Assert.Multiple(() =>
+        [Test]
+        public async Task LogError_ValidMessage_WritesToLogFile()
         {
-            Assert.That(logFileLastLine, Does.Contain(message));
-            Assert.That(logFileLastLine, Does.Contain(source));
-            Assert.That(logFileLastLine, Does.Contain(LogLevel.Error.ToString()));
-            Assert.That(logFileLastLine, Does.EndWith($"{LogLevel.Error}: {source}: {message}"));
-        });
+            // Arrange
+            const string message = "Test error message";
+            const string source = "Test error source";
+
+            // Act
+            await loggingService.LogError(message, source);
+
+            // Assert
+            var logFilePath = Path.Combine(testLogFolderPath, $"{DateTime.Now:yyyy-MM-dd}.log");
+
+            var logFileLines = await File.ReadAllLinesAsync(logFilePath);
+            var logFileLastLine = logFileLines.Last();
+            Assert.Multiple(() =>
+            {
+                Assert.That(logFileLastLine, Does.Contain(message));
+                Assert.That(logFileLastLine, Does.Contain(source));
+                Assert.That(logFileLastLine, Does.Contain(LogLevel.Error.ToString()));
+                Assert.That(logFileLastLine, Does.EndWith($"{LogLevel.Error}: {source}: {message}"));
+            });
+        }
     }
 
-    [TearDown]
-    public void TearDown()
+
+    public class LoggingServiceTestsBase
     {
-        var logFilePath = Path.Combine(_testLogFolderPath, $"{DateTime.Now:yyyy-MM-dd}.log");
-        if (File.Exists(logFilePath))
+        protected string testLogFolderPath;
+        protected Mock<IConfiguration> mockConfigurationMock;
+        protected Mock<IConfigurationSection> mockConfigurationSectionMock;
+        protected LoggingService loggingService;
+
+        [SetUp]
+        public void SetUp()
         {
-            File.Delete(logFilePath);
+            testLogFolderPath = Path.Combine(Path.GetTempPath(), "TestLogs");
+
+            // Mock IConfigurationSection
+            mockConfigurationSectionMock = new Mock<IConfigurationSection>();
+            mockConfigurationSectionMock.SetupGet(m => m.Value).Returns(testLogFolderPath);
+
+            // Mock IConfiguration
+            mockConfigurationMock = new Mock<IConfiguration>();
+            mockConfigurationMock.Setup(m => m.GetSection(It.IsAny<string>()))
+                .Returns(mockConfigurationSectionMock.Object);
+
+            // Initialize LoggingService with mocked IConfiguration
+            loggingService = new LoggingService(mockConfigurationMock.Object);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            var logFilePath = Path.Combine(testLogFolderPath, $"{DateTime.Now:yyyy-MM-dd}.log");
+            if (File.Exists(logFilePath))
+            {
+                File.Delete(logFilePath);
+            }
         }
     }
 }
