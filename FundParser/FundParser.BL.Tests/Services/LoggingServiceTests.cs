@@ -11,13 +11,6 @@ public class LoggingServiceTests
     public class ConstructorTests : LoggingServiceTestsBase
     {
         [Test]
-        public void Constructor_ValidConfiguration_CreatesLogFolder()
-        {
-            // Arrange & Act & Assert
-            Assert.That(Directory.Exists(testLogFolderPath), Is.True);
-        }
-
-        [Test]
         public void Constructor_InvalidConfiguration_ThrowsException()
         {
             // Arrange
@@ -25,6 +18,13 @@ public class LoggingServiceTests
 
             // Act & Assert
             Assert.Throws<InvalidOperationException>(() => new LoggingService(mockConfigurationMock.Object));
+        }
+        
+        [Test]
+        public void Constructor_ValidConfiguration_CreatesLogFolder()
+        {
+            // Arrange & Act & Assert
+            Assert.That(Directory.Exists(testLogFolderPath), Is.True);
         }
     }
 
