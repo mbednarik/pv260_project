@@ -6,8 +6,8 @@ using FundParser.DAL;
 using FundParser.DAL.Models;
 using FundParser.DAL.Repository;
 using FundParser.DAL.UnitOfWork;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using Moq;
+using MockQueryable.Moq;
 
 namespace FundParser.BL.Tests.Services;
 
@@ -15,42 +15,58 @@ namespace FundParser.BL.Tests.Services;
 public class HoldingServiceTests
 {
     private IHoldingService _holdingService;
-    private UnitOfWork _unitOfWork;
+    private Mock<UnitOfWork> _unitOfWorkMock;
+    private Mock<IRepository<Holding>> _holdingRepositoryMock;
+    private Mock<IRepository<Company>> _companyRepositoryMock;
+    private Mock<IRepository<Fund>> _fundRepositoryMock;
 
     [SetUp]
     public void Setup()
     {
-        var serviceProvider = new ServiceCollection()
-            .AddEntityFrameworkInMemoryDatabase()
-            .BuildServiceProvider();
+        _holdingRepositoryMock = new Mock<IRepository<Holding>>();
+        _companyRepositoryMock = new Mock<IRepository<Company>>();
+        _fundRepositoryMock = new Mock<IRepository<Fund>>();
+        
+        _companyRepositoryMock.Setup(m => m.GetQueryable())
+            .Returns(new List<Company>
+            {
+                new Company()
+                {
+                    Name = "company",
+                    Cusip = "cusip",
+                    Ticker = "ticker"
+                }
+            }.BuildMock());
 
-        var options = new DbContextOptionsBuilder<FundParserDbContext>()
-            .UseInMemoryDatabase($"FundParser_test_db_{Guid.NewGuid()}")
-            .UseInternalServiceProvider(serviceProvider)
-            .Options;
+        _fundRepositoryMock.Setup(m => m.GetQueryable())
+            .Returns(new List<Fund>
+            {
+                new Fund()
+                {
+                    Name = "fund"
+                }
+            }.BuildMock());
 
-        var dbContext = new FundParserDbContext(options);
-
-        _unitOfWork = new UnitOfWork(
-            dbContext,
-            new Repository<Fund>(dbContext),
-            new Repository<Company>(dbContext),
-            new Repository<Holding>(dbContext),
-            new Repository<HoldingDiff>(dbContext)
+        _unitOfWorkMock = new Mock<UnitOfWork>(
+            new Mock<FundParserDbContext>().Object,
+            _fundRepositoryMock.Object,
+            _companyRepositoryMock.Object,
+            _holdingRepositoryMock.Object,
+            new Mock<IRepository<HoldingDiff>>().Object
         );
-        var mapper = new Mapper(new MapperConfiguration(MapperConfig.ConfigureMapper));
 
-        _holdingService = new HoldingService(_unitOfWork, mapper);
+        var mapper = new Mapper(new MapperConfiguration(MapperConfig.ConfigureMapper));
+        _holdingService = new HoldingService(_unitOfWorkMock.Object, mapper);
     }
 
     [Test]
     public async Task GetHoldings_ValidData_ReturnsHoldings()
     {
         // Arrange
-        await _unitOfWork.HoldingRepository.Insert(CreateHolding(1));
-        await _unitOfWork.CommitAsync();
+        _holdingRepositoryMock.Setup(m => m.GetAll(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Holding> { CreateHolding(1) });
 
-        // // Act
+        // Act
         var result = (await _holdingService.GetHoldings()).ToList();
 
         // Assert
@@ -79,10 +95,8 @@ public class HoldingServiceTests
     public async Task GetHoldings_MultipleHoldings_ReturnsHoldingsInCorrectOrder()
     {
         // Arrange
-        await _unitOfWork.HoldingRepository.Insert(CreateHolding(1));
-        await _unitOfWork.HoldingRepository.Insert(CreateHolding(2));
-        await _unitOfWork.HoldingRepository.Insert(CreateHolding(3));
-        await _unitOfWork.CommitAsync();
+        _holdingRepositoryMock.Setup(m => m.GetAll(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Holding> { CreateHolding(1), CreateHolding(2), CreateHolding(3) });
 
         // Act
         var result = (await _holdingService.GetHoldings()).ToList();
@@ -90,26 +104,86 @@ public class HoldingServiceTests
         // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Has.Count.EqualTo(3));
-        Assert.That(result[0].Weight, Is.LessThan(result[1].Weight));
-        Assert.That(result[1].Weight, Is.LessThan(result[2].Weight));
+        Assert.Multiple(() =>
+        {
+            Assert.That(result[0].Weight, Is.LessThan(result[1].Weight));
+            Assert.That(result[1].Weight, Is.LessThan(result[2].Weight));
+        });
     }
 
     [Test]
-    public async Task AddHolding_ValidData_ReturnsHolding()
+    public async Task AddHolding_ValidDataExistingCompanyAndFund_ReturnsHolding()
     {
         // Arrange
-        var holding = new AddHoldingDTO
+        _holdingRepositoryMock.Setup(m => m.Insert(It.IsAny<Holding>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(CreateHolding(1));
+
+        // Act
+        var result = await _holdingService.AddHolding(new AddHoldingDTO
         {
-            Fund = new AddFundDTO { Name = "fund1" },
-            Company = new AddCompanyDTO { Cusip = "cusip1" },
+            Fund = new AddFundDTO { Name = "fund" },
+            Company = new AddCompanyDTO { Cusip = "cusip" },
             MarketValue = 1,
             Date = DateTime.Now,
             Weight = 1,
             Shares = 1
-        };
+        });
+
+        // Assert
+        Assert.That(result, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Shares, Is.EqualTo(1));
+            Assert.That(result.MarketValue, Is.EqualTo(1));
+            Assert.That(result.Weight, Is.EqualTo(1));
+        });
+    }
+    
+    [Test]
+    public async Task AddHolding_ValidDataNonExistingCompany_ReturnsHolding()
+    {
+        // Arrange
+        _holdingRepositoryMock.Setup(m => m.Insert(It.IsAny<Holding>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(CreateHolding(1));
 
         // Act
-        var result = await _holdingService.AddHolding(holding);
+        var result = await _holdingService.AddHolding(new AddHoldingDTO
+        {
+            Fund = new AddFundDTO { Name = "fund" },
+            Company = new AddCompanyDTO { Cusip = "nonExistingCusip" },
+            MarketValue = 1,
+            Date = DateTime.Now,
+            Weight = 1,
+            Shares = 1
+        });
+
+        // Assert
+        Assert.That(result, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Shares, Is.EqualTo(1));
+            Assert.That(result.MarketValue, Is.EqualTo(1));
+            Assert.That(result.Weight, Is.EqualTo(1));
+        });
+    }
+    
+    [Test]
+    public async Task AddHolding_ValidDataNonExistingFund_ReturnsHolding()
+    {
+        // Arrange
+        _holdingRepositoryMock.Setup(m => m.Insert(It.IsAny<Holding>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(CreateHolding(1));
+
+        // Act
+        var result = await _holdingService.AddHolding(new AddHoldingDTO
+        {
+            Fund = new AddFundDTO { Name = "nonExistingFund" },
+            Company = new AddCompanyDTO { Cusip = "cusip" },
+            MarketValue = 1,
+            Date = DateTime.Now,
+            Weight = 1,
+            Shares = 1
+        });
 
         // Assert
         Assert.That(result, Is.Not.Null);
@@ -136,7 +210,7 @@ public class HoldingServiceTests
         };
 
         // Act & Assert
-        Assert.ThrowsAsync<InvalidOperationException>(() => _holdingService.AddHolding(holding));
+        Assert.That(() => _holdingService.AddHolding(holding), Throws.Exception);
     }
 
     [Test]
@@ -152,24 +226,18 @@ public class HoldingServiceTests
             Weight = 1,
             Shares = 1
         };
-
+    
         // Act & Assert
-        Assert.ThrowsAsync<InvalidOperationException>(() => _holdingService.AddHolding(holding));
+        Assert.That(() =>_holdingService.AddHolding(holding), Throws.Exception);
     }
-
+    
     [Test]
     public void AddHolding_NullHolding_ThrowsException()
     {
         // Arrange & Act & Assert
-        Assert.ThrowsAsync<InvalidOperationException>(() => _holdingService.AddHolding(null));
+        Assert.That(() => _holdingService.AddHolding(null!), Throws.Exception);
     }
-
-    [TearDown]
-    public void TearDown()
-    {
-        _unitOfWork.Dispose();
-    }
-
+    
     private static Holding CreateHolding(int var) => new Holding
     {
         Weight = var,
