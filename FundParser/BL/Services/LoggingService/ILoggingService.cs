@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-
-namespace FundParser.BL.Services.LoggingService
+﻿namespace FundParser.BL.Services.LoggingService
 {
     public interface ILoggingService
     {
@@ -9,7 +7,5 @@ namespace FundParser.BL.Services.LoggingService
         Task LogWarning(string message, string source, CancellationToken cancellationToken = default);
 
         Task LogError(string message, string source, CancellationToken cancellationToken = default);
-
-        Task Log(string message, string source, LogLevel severity = LogLevel.None, CancellationToken cancellationToken = default);
     }
 }

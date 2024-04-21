@@ -34,7 +34,7 @@ namespace FundParser.BL.Services.LoggingService
             return Log(message, source, LogLevel.Error, cancellationToken);
         }
 
-        public async Task Log(string message, string source, LogLevel severity = LogLevel.None,
+        private async Task Log(string message, string source, LogLevel severity = LogLevel.None,
             CancellationToken cancellationToken = default)
         {
             var logFilePath = Path.Combine(_logFolderPath, $"{DateTime.Now:yyyy-MM-dd}.log");
