@@ -3,7 +3,9 @@
     public class HoldingDTO
     {
         public int Id { get; set; }
-
+        
+        public int FundId { get; set; }
+        
         public DateTime Date { get; set; }
 
         public decimal Shares { get; set; }
