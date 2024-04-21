@@ -1,24 +1,24 @@
-using BL.Services.HoldingService;
-using Microsoft.AspNetCore.Mvc;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using FundParser.BL.Services.HoldingService;
 
-namespace FundParser.Controllers
+using Microsoft.AspNetCore.Mvc;
+
+namespace FundParser.App.Controllers
 {
     [ApiController]
     [Route("[controller]")]
     public class HoldingController : ControllerBase
     {
-        private readonly IHoldingService holdingService;
+        private readonly IHoldingService _holdingService;
 
         public HoldingController(IHoldingService holdingService)
         {
-            this.holdingService = holdingService;
+            _holdingService = holdingService;
         }
 
-        [HttpGet(Name = "GetHoldings")]
-        public IActionResult GetHoldings()
+        [HttpGet(Name = nameof(GetHoldings))]
+        public IActionResult GetHoldings(CancellationToken cancellationToken)
         {
-            var data = holdingService.GetHoldings();
+            var data = _holdingService.GetHoldings(cancellationToken);
             return new JsonResult(data);
         }
     }

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DAL.Models
+namespace FundParser.DAL.Models
 {
     public class Holding : BaseEntity
     {
@@ -9,10 +9,8 @@ namespace DAL.Models
         [Required]
         public DateTime Date { get; set; }
 
-        [ForeignKey("Fund")]
         public int FundId { get; set; }
 
-        [ForeignKey("Company")]
         public int CompanyId { get; set; }
 
         [Required]
@@ -24,8 +22,10 @@ namespace DAL.Models
         [Required]
         public decimal Weight { get; set; }
 
-        public virtual Fund Fund { get; set; }
+        [ForeignKey(nameof(FundId))]
+        public virtual Fund Fund { get; set; } 
 
-        public virtual Company Company { get; set; }
+        [ForeignKey(nameof(CompanyId))]
+        public virtual Company Company { get; set; } 
     }
 }

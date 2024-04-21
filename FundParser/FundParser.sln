@@ -3,13 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FundParser", "FundParser\FundParser.csproj", "{878092BB-9D0B-4A6F-8151-F47F8D67F864}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FundParser.App", "FundParser\FundParser.App.csproj", "{878092BB-9D0B-4A6F-8151-F47F8D67F864}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{3A8F8560-F28E-49E1-9707-AF2155B8E89B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FundParser.DAL", "DAL\FundParser.DAL.csproj", "{3A8F8560-F28E-49E1-9707-AF2155B8E89B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BL", "BL\BL.csproj", "{C5E72242-38B1-46CF-8C5A-50C1735EEB37}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FundParser.BL", "BL\FundParser.BL.csproj", "{C5E72242-38B1-46CF-8C5A-50C1735EEB37}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Configuration", "Configuration\Configuration.csproj", "{52A0854B-5A78-4917-9DD2-DBC490E4A458}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FundParser.Configuration", "Configuration\FundParser.Configuration.csproj", "{52A0854B-5A78-4917-9DD2-DBC490E4A458}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FundParser.BL.Tests", "FundParser.BL.Tests\FundParser.BL.Tests.csproj", "{9520FF27-3F6E-4F4D-BA7D-FC8F6A15F675}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FundParser.DAL.Tests", "FundParser.DAL.Tests\FundParser.DAL.Tests.csproj", "{3745BD4F-E085-4E04-BAC7-C506E39EC05B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{52A0854B-5A78-4917-9DD2-DBC490E4A458}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52A0854B-5A78-4917-9DD2-DBC490E4A458}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52A0854B-5A78-4917-9DD2-DBC490E4A458}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9520FF27-3F6E-4F4D-BA7D-FC8F6A15F675}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9520FF27-3F6E-4F4D-BA7D-FC8F6A15F675}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9520FF27-3F6E-4F4D-BA7D-FC8F6A15F675}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9520FF27-3F6E-4F4D-BA7D-FC8F6A15F675}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3745BD4F-E085-4E04-BAC7-C506E39EC05B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3745BD4F-E085-4E04-BAC7-C506E39EC05B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3745BD4F-E085-4E04-BAC7-C506E39EC05B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3745BD4F-E085-4E04-BAC7-C506E39EC05B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

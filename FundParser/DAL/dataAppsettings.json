@@ -1,0 +1,5 @@
+{
+  "ConnectionStrings": {
+    "SqlLite": "Data Source=../DAL/Database/FundParser.sqlite"
+  }
+}

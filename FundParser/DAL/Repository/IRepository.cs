@@ -1,20 +1,21 @@
-﻿using DAL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FundParser.DAL.Models;
 
-namespace DAL.Repository
+namespace FundParser.DAL.Repository
 {
     public interface IRepository<TEntity> where TEntity : BaseEntity
     {
-        Task<TEntity> GetByID(int id);
+        Task<TEntity> GetByID(int id, CancellationToken cancellationToken = default);
+
         IQueryable<TEntity> GetQueryable();
-        Task<IEnumerable<TEntity>> GetAll();
-        void Insert(TEntity entity);
+
+        Task<IEnumerable<TEntity>> GetAll(CancellationToken cancellationToken = default);
+
+        Task<TEntity> Insert(TEntity entity, CancellationToken cancellationToken = default);
+
         void Delete(int id);
+
         void Delete(TEntity entityToDelete);
+
         void Update(TEntity entityToUpdate);
     }
 }
