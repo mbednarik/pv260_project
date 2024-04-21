@@ -27,7 +27,7 @@ namespace FundParser.BL.Services.HoldingDiffService
 
             if (!areHoldingDiffsCalculated)
             {
-                return await CalculateAndStoreHoldingDiffs(fundId, oldHoldingDate, newHoldingDate, cancellationToken);
+                return await CalculateHoldingDiffs(fundId, oldHoldingDate, newHoldingDate, cancellationToken);
             }
 
             return await _unitOfWork.HoldingDiffRepository.GetQueryable()
@@ -42,7 +42,7 @@ namespace FundParser.BL.Services.HoldingDiffService
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<HoldingDiffDTO>> CalculateAndStoreHoldingDiffs(int fundId, DateTime oldHoldingsDate, DateTime newHoldingsDate, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<HoldingDiffDTO>> CalculateHoldingDiffs(int fundId, DateTime oldHoldingsDate, DateTime newHoldingsDate, CancellationToken cancellationToken = default)
         {
             var oldHoldings = _unitOfWork.HoldingRepository.GetQueryable()
                 .Where(h => h.FundId == fundId)

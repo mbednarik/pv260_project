@@ -6,6 +6,6 @@ namespace FundParser.BL.Services.HoldingDiffService
     {
         Task<IEnumerable<HoldingDiffDTO>> GetHoldingDiffs(int fundId, DateTime oldHoldingDate, DateTime newHoldingDate, CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<HoldingDiffDTO>> CalculateAndStoreHoldingDiffs(int fundId, DateTime oldHoldingsDate, DateTime newHoldingsDate, CancellationToken cancellationToken = default);
+        Task<IEnumerable<HoldingDiffDTO>> CalculateHoldingDiffs(int fundId, DateTime oldHoldingsDate, DateTime newHoldingsDate, CancellationToken cancellationToken = default);
     }
 }
