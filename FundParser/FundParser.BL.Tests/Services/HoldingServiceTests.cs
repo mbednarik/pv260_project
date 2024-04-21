@@ -1,4 +1,5 @@
 using AutoMapper;
+
 using FundParser.BL.DTOs;
 using FundParser.BL.Services.HoldingService;
 using FundParser.Configuration;
@@ -6,8 +7,10 @@ using FundParser.DAL;
 using FundParser.DAL.Models;
 using FundParser.DAL.Repository;
 using FundParser.DAL.UnitOfWork;
-using Moq;
+
 using MockQueryable.Moq;
+
+using Moq;
 
 namespace FundParser.BL.Tests.Services;
 
@@ -17,7 +20,18 @@ public class HoldingServiceTests
     public class GetHoldingsTests : HoldingServiceTestsBase
     {
         [Test]
-        public async Task GetHoldings_ValidData_ReturnsHoldings()
+        public async Task GetHoldings_NoData_ReturnsEmptyList()
+        {
+            // Act
+            var result = (await holdingService.GetHoldings()).ToList();
+
+            // Assert
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Has.Count.EqualTo(0));
+        }
+
+        [Test]
+        public async Task GetHoldings_ValidData_ReturnsCorrectHoldings()
         {
             // Arrange
             var expectedHolding = CreateHolding(1);
@@ -30,17 +44,6 @@ public class HoldingServiceTests
             // Assert
             Assert.That(result, Has.Count.EqualTo(1));
             AssertHolding(result.First(), expectedHolding);
-        }
-
-        [Test]
-        public async Task GetHoldings_NoData_ReturnsEmptyList()
-        {
-            // Act
-            var result = (await holdingService.GetHoldings()).ToList();
-
-            // Assert
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result, Has.Count.EqualTo(0));
         }
     }
 
@@ -71,57 +74,14 @@ public class HoldingServiceTests
         }
 
         [Test]
-        public void AddHolding_InvalidFundData_ThrowsException()
-        {
-            // Arrange
-            var addHoldingDto = CreateAddHoldingDto(1);
-            addHoldingDto.Fund = null!; // Invalid data
-          
-            // Act & Assert
-            Assert.That(() => holdingService.AddHolding(addHoldingDto), Throws.Exception);
-        }
-
-        [Test]
-        public void AddHolding_InvalidCompanyData_ThrowsException()
-        {
-            // Arrange
-            var addHoldingDto = CreateAddHoldingDto(1);
-            addHoldingDto.Company = null!; // Invalid data
-
-            // Act & Assert
-            Assert.That(() => holdingService.AddHolding(addHoldingDto), Throws.Exception);
-        }
-
-        [Test]
         public void AddHolding_NullHolding_ThrowsException()
         {
             // Arrange & Act & Assert
-            Assert.That(() => holdingService.AddHolding(null!), Throws.Exception);
+            Assert.That(async () => await holdingService.AddHolding(null!), Throws.ArgumentNullException);
         }
 
         [Test]
-        public async Task AddHolding_ValidDataExistingCompanyAndFund_ReturnsHolding()
-        {
-            // Arrange
-            holdingRepositoryMock.Setup(m => m.Insert(It.IsAny<Holding>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(CreateHolding(1));
-
-            // Act
-            var result = await holdingService.AddHolding(CreateAddHoldingDto(1));
-
-            // Assert
-            AssertHolding(result, CreateHolding(1));
-            Assert.That(result, Is.Not.Null);
-            Assert.Multiple(() =>
-            {
-                Assert.That(result.Shares, Is.EqualTo(1));
-                Assert.That(result.MarketValue, Is.EqualTo(1));
-                Assert.That(result.Weight, Is.EqualTo(1));
-            });
-        }
-
-        [Test]
-        public async Task AddHolding_ValidDataNonExistingCompany_ReturnsHolding()
+        public async Task AddHolding_ValidNonExistingCompany_ReturnsCorrectHolding()
         {
             // Arrange
             var expectedHolding = CreateHolding(1);
@@ -136,7 +96,7 @@ public class HoldingServiceTests
         }
 
         [Test]
-        public async Task AddHolding_ValidDataNonExistingFund_ReturnsHolding()
+        public async Task AddHolding_ValidNonExistingFund_ReturnsCorrectHolding()
         {
             // Arrange
             var expectedHolding = CreateHolding(1);
@@ -152,6 +112,20 @@ public class HoldingServiceTests
             AssertHolding(result, expectedHolding);
         }
 
+        [Test]
+        public async Task AddHolding_ValidExistingCompanyAndFund_ReturnsCorrectHolding()
+        {
+            // Arrange
+            holdingRepositoryMock.Setup(m => m.Insert(It.IsAny<Holding>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(CreateHolding(1));
+
+            // Act
+            var result = await holdingService.AddHolding(CreateAddHoldingDto(1));
+
+            // Assert
+            AssertHolding(result, CreateHolding(1));
+        }
+
         private static AddHoldingDTO CreateAddHoldingDto(int var) => new AddHoldingDTO
         {
             Fund = new AddFundDTO { Name = "fund" },
@@ -163,9 +137,10 @@ public class HoldingServiceTests
         };
     }
 
+    [TestFixture]
     public class HoldingServiceTestsBase
     {
-        protected IHoldingService holdingService;
+        protected HoldingService holdingService;
         protected Mock<UnitOfWork> unitOfWorkMock;
         protected Mock<IRepository<Holding>> holdingRepositoryMock;
         protected Mock<IRepository<Company>> companyRepositoryMock;

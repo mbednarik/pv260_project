@@ -1,6 +1,8 @@
 using FundParser.BL.Services.LoggingService;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+
 using Moq;
 
 namespace FundParser.BL.Tests.Services;
@@ -24,7 +26,7 @@ public class LoggingServiceTests
         public void Constructor_ValidConfiguration_CreatesLogFolder()
         {
             // Initialize LoggingService with mocked IConfiguration
-            var loggingService = new LoggingService(mockConfigurationMock.Object);
+            _ = new LoggingService(mockConfigurationMock.Object);
 
             // Arrange & Act & Assert
             Assert.That(Directory.Exists(testLogFolderPath), Is.True);
@@ -48,13 +50,8 @@ public class LoggingServiceTests
 
             var logFileLines = await File.ReadAllLinesAsync(logFilePath);
             var logFileLastLine = logFileLines.Last();
-            Assert.Multiple(() =>
-            {
-                Assert.That(logFileLastLine, Does.Contain(message));
-                Assert.That(logFileLastLine, Does.Contain(source));
-                Assert.That(logFileLastLine, Does.Contain(LogLevel.Information.ToString()));
-                Assert.That(logFileLastLine, Does.EndWith($"{LogLevel.Information}: {source}: {message}"));
-            });
+
+            AssertLogLine(logFileLastLine, message, source, LogLevel.Information);
         }
     }
 
@@ -75,13 +72,8 @@ public class LoggingServiceTests
 
             var logFileLines = await File.ReadAllLinesAsync(logFilePath);
             var logFileLastLine = logFileLines.Last();
-            Assert.Multiple(() =>
-            {
-                Assert.That(logFileLastLine, Does.Contain(message));
-                Assert.That(logFileLastLine, Does.Contain(source));
-                Assert.That(logFileLastLine, Does.Contain(LogLevel.Warning.ToString()));
-                Assert.That(logFileLastLine, Does.EndWith($"{LogLevel.Warning}: {source}: {message}"));
-            });
+
+            AssertLogLine(logFileLastLine, message, source, LogLevel.Warning);
         }
     }
 
@@ -102,24 +94,20 @@ public class LoggingServiceTests
 
             var logFileLines = await File.ReadAllLinesAsync(logFilePath);
             var logFileLastLine = logFileLines.Last();
-            Assert.Multiple(() =>
-            {
-                Assert.That(logFileLastLine, Does.Contain(message));
-                Assert.That(logFileLastLine, Does.Contain(source));
-                Assert.That(logFileLastLine, Does.Contain(LogLevel.Error.ToString()));
-                Assert.That(logFileLastLine, Does.EndWith($"{LogLevel.Error}: {source}: {message}"));
-            });
+
+            AssertLogLine(logFileLastLine, message, source, LogLevel.Error);
         }
     }
 
-    public class LoggingServiceTestsBase
+    [TestFixture]
+    public class LoggingServiceTestsUninitializedBase
     {
         protected string testLogFolderPath;
         protected Mock<IConfiguration> mockConfigurationMock;
         protected Mock<IConfigurationSection> mockConfigurationSectionMock;
 
         [SetUp]
-        public void SetUp()
+        public void BaseSetUp()
         {
             testLogFolderPath = Path.Combine(Path.GetTempPath(), "TestLogs");
 
@@ -134,16 +122,27 @@ public class LoggingServiceTests
         }
 
         [TearDown]
-        public void TearDown()
+        public void BaseTearDown()
         {
             if (Directory.Exists(testLogFolderPath))
             {
                 Directory.Delete(testLogFolderPath, true);
             }
         }
+
+        protected static void AssertLogLine(string logLine, string message, string source, LogLevel logLevel)
+        {
+            Assert.Multiple(() =>
+            {
+                Assert.That(logLine, Does.Contain(message));
+                Assert.That(logLine, Does.Contain(source));
+                Assert.That(logLine, Does.Contain(logLevel.ToString()));
+                Assert.That(logLine, Does.EndWith($"{logLevel}: {source}: {message}"));
+            });
+        }
     }
 
-    public class LoggingServiceTestsInitializedBase : LoggingServiceTestsBase
+    public class LoggingServiceTestsInitializedBase : LoggingServiceTestsUninitializedBase
     {
         protected LoggingService loggingService;
 
@@ -152,9 +151,5 @@ public class LoggingServiceTests
         {
             loggingService = new LoggingService(mockConfigurationMock.Object);
         }
-    }
-
-    public class LoggingServiceTestsUninitializedBase : LoggingServiceTestsBase
-    {
     }
 }

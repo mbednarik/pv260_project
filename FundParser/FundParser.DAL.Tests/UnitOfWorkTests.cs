@@ -56,7 +56,7 @@ namespace FundParser.DAL.Tests
             [Test]
             public void Insert_NullEntity_ThrowsException()
             {
-                // Act, Assert
+                // Act & Assert
                 Assert.That(async () => await unitOfWork.CompanyRepository.Insert(null!), Throws.ArgumentNullException);
             }
 
@@ -135,14 +135,14 @@ namespace FundParser.DAL.Tests
             [Test]
             public void Delete_NonExistingEntity_ThrowsException()
             {
-                // Act, Assert
+                // Act & Assert
                 Assert.That(async () => await unitOfWork.CompanyRepository.Delete(0), Throws.Exception.With.Message.EqualTo("Entity with given Id does not exist."));
             }
 
             [Test]
             public void Delete_NullEntity_ThrowsException()
             {
-                // Act, Assert
+                // Act & Assert
                 Assert.That(() => unitOfWork.CompanyRepository.Delete(null!), Throws.ArgumentNullException);
             }
 
@@ -231,7 +231,7 @@ namespace FundParser.DAL.Tests
             [Test]
             public void Update_NullEntity_ThrowsException()
             {
-                // Act, Assert
+                // Act & Assert
                 Assert.That(() => unitOfWork.CompanyRepository.Update(null!), Throws.ArgumentNullException);
             }
 
