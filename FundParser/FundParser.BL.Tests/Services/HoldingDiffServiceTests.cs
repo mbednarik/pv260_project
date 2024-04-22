@@ -41,7 +41,7 @@ public class HoldingDiffServiceTests
     }
 
     [Test]
-    public async Task GetHoldingDiffs_CalculatedDiffsNotExist_ReturnsCalculatedDiffs()
+    public async Task GetHoldingDiffs_CalculatedDiffNotExist_ReturnsCalculatedDiff()
     {
         // Arrange
         _holdingDiffRepositoryMock.Setup(m => m.GetQueryable())
@@ -74,7 +74,7 @@ public class HoldingDiffServiceTests
     }
 
     [Test]
-    public async Task GetHoldingDiffs_CalculatedDiffsExist_ReturnsExistingDiffs()
+    public async Task GetHoldingDiffs_CalculatedDiffExist_ReturnsExistingDiff()
     {
         // Arrange
         var dateTime = DateTime.Now;
@@ -98,6 +98,41 @@ public class HoldingDiffServiceTests
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Has.Count.EqualTo(1));
         AssertHoldingDiff(result[0], expected);
+    }
+
+    [Test]
+    public async Task GetHoldingDiffs_MultipleCalculatedDiffsExist_ReturnsExistingDiffs()
+    {
+        // Arrange
+        var dateTime = DateTime.Now;
+        var nextDateTime = dateTime.AddDays(1);
+        var expected = CreateExpectedHoldingDiff(
+            CreateHolding(1, dateTime),
+            CreateHolding(2, nextDateTime)
+        );
+        var expected2 = CreateExpectedHoldingDiff(
+            CreateHolding(3, dateTime),
+            CreateHolding(4, nextDateTime)
+        );
+        var notExpected = CreateExpectedHoldingDiff(
+            CreateHolding(3, nextDateTime.AddDays(2)),
+            CreateHolding(4, nextDateTime.AddDays(4))
+        );
+
+        _holdingDiffRepositoryMock.Setup(m => m.GetQueryable())
+            .Returns(new List<HoldingDiff> { expected, expected2, notExpected }.BuildMock());
+
+        // Act
+        var result = (await _holdingDiffService.GetHoldingDiffs(FundId, dateTime, nextDateTime)).ToList();
+
+        // Assert
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Has.Count.EqualTo(2));
+        Assert.Multiple(() =>
+        {
+            AssertHoldingDiff(result[0], expected);
+            AssertHoldingDiff(result[1], expected2);
+        });
     }
 
     private static void AssertHoldingDiff(HoldingDiffDTO? holdingDiffDto, HoldingDiff holdingDiff)
