@@ -9,17 +9,34 @@ type HoldingDiffTableProps = {
 export const HoldingDiffTable = ({ holdingDiffs }: HoldingDiffTableProps) => (
 	<Box h="100vh" style={{ overflow: "auto" }}>
 		<Table>
-			<Table.Thead pos="sticky" top={0} bg="blue.1">
+			<Table.Thead
+				data-testid="holding-diff-table-head"
+				pos="sticky"
+				top={0}
+				bg="blue.1"
+			>
 				<Table.Tr>
-					<Table.Th>Fund name</Table.Th>
-					<Table.Th>Company name</Table.Th>
-					<Table.Th>Ticker</Table.Th>
-					<Table.Th># shares</Table.Th>
-					<Table.Th>Shares change %</Table.Th>
-					<Table.Th>Weight change</Table.Th>
+					<Table.Th data-testid="holding-diff-table-head-fund-name">
+						Fund name
+					</Table.Th>
+					<Table.Th data-testid="holding-diff-table-head-company-name">
+						Company name
+					</Table.Th>
+					<Table.Th data-testid="holding-diff-table-head-ticker">
+						Ticker
+					</Table.Th>
+					<Table.Th data-testid="holding-diff-table-head-shares">
+						# shares
+					</Table.Th>
+					<Table.Th data-testid="holding-diff-table-head-shares-change">
+						Shares change %
+					</Table.Th>
+					<Table.Th data-testid="holding-diff-table-head-weight-change">
+						Weight change
+					</Table.Th>
 				</Table.Tr>
 			</Table.Thead>
-			<Table.Tbody>
+			<Table.Tbody data-testid="holding-diff-table-body">
 				{holdingDiffs.map(holdingDiff => (
 					<HoldingDiffTableRow
 						key={holdingDiff.id}

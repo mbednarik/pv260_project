@@ -2,3 +2,4 @@ vite.config.ts
 src/vite-env.d.ts
 dist
 tsconfig.json
+cypress

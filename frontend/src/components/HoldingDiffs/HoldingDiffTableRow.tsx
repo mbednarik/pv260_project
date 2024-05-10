@@ -33,6 +33,7 @@ const getSharesChangePercentage = (oldShares: number, sharesChange: number) => {
 
 export const HoldingDiffTableRow = ({
 	holdingDiff: {
+		id,
 		fundName,
 		companyName,
 		ticker,
@@ -47,18 +48,30 @@ export const HoldingDiffTableRow = ({
 	);
 
 	return (
-		<Table.Tr>
-			<Table.Td>{fundName}</Table.Td>
-			<Table.Td>{companyName}</Table.Td>
-			<Table.Td>{ticker}</Table.Td>
-			<Table.Td>{oldShares + sharesChange}</Table.Td>
-			<Table.Td>
+		<Table.Tr data-testid={`holding-diff-table-row-${id}-wrapper`}>
+			<Table.Td data-testid={`holding-diff-table-row-${id}-fund-name`}>
+				{fundName}
+			</Table.Td>
+			<Table.Td data-testid={`holding-diff-table-row-${id}-company-name`}>
+				{companyName}
+			</Table.Td>
+			<Table.Td data-testid={`holding-diff-table-row-${id}-ticker`}>
+				{ticker}
+			</Table.Td>
+			<Table.Td data-testid={`holding-diff-table-row-${id}-shares`}>
+				{oldShares + sharesChange}
+			</Table.Td>
+			<Table.Td
+				data-testid={`holding-diff-table-row-${id}-shares-change`}
+			>
 				<Flex gap="sm" align="center">
 					{sharesChangePercentage}%{" "}
 					{getChangeIcon(sharesChangePercentage)}
 				</Flex>
 			</Table.Td>
-			<Table.Td>
+			<Table.Td
+				data-testid={`holding-diff-table-row-${id}-weight-change`}
+			>
 				<Flex gap="sm" align="center">
 					{weightChange} {getChangeIcon(weightChange)}
 				</Flex>
