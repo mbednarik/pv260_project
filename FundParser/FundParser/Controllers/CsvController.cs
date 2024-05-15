@@ -1,3 +1,4 @@
+using FundParser.BL.Exceptions;
 using FundParser.BL.Services.FundCsvService;
 using FundParser.BL.Services.LoggingService;
 using Microsoft.AspNetCore.Mvc;
@@ -21,9 +22,13 @@ public class CsvController : ControllerBase
     [HttpPost(Name = "csv")]
     public async Task<IActionResult> CsvUpload(CancellationToken cancellationToken)
     {
-        // temporary endpoint to update holdings for testing purposes
         var result = await _fundCsvService.UpdateHoldings(cancellationToken);
-        await _logger.LogInformation("Csv imported from the website", nameof(CsvController), cancellationToken);
-        return Ok(result);
+        if (result == 0)
+        {
+            return Ok("No rows were updated!");
+        }
+        var message = $"Successfully imported {result} rows from API";
+        await _logger.LogInformation(message, nameof(CsvController), cancellationToken);
+        return Ok(message);
     }
 }

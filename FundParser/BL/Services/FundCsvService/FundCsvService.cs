@@ -1,5 +1,5 @@
 using System.Globalization;
-
+using FundParser.BL.Exceptions;
 using FundParser.BL.DTOs;
 using FundParser.BL.Services.CsvParsingService;
 using FundParser.BL.Services.DownloaderService;
@@ -50,15 +50,14 @@ public class FundCsvService : IFundCsvService
         {
             await _logger.LogError($"{CsvUrlSectionKey} is not set in the configuration",
                 nameof(FundCsvService), cancellationToken);
-            throw new Exception($"{CsvUrlSectionKey} is not set in the configuration");
+            throw new MissingConfigurationException($"{CsvUrlSectionKey} is not set in the configuration");
         }
-
-        var csvString = await _downloaderService.DownloadTextFileAsStringAsync(url, _csvRequestHeaders, cancellationToken)
-            ?? throw new Exception("Failed to download csv");
-
-        var csvRows = _csvParsingService.ParseString(csvString, cancellationToken)
-            ?? throw new Exception("Failed to parse csv");
-
+        var csvString = await _downloaderService.DownloadTextFileAsStringAsync(url, _csvRequestHeaders, cancellationToken);
+        var csvRows = _csvParsingService.ParseString(csvString, cancellationToken);
+        if (!csvRows.Any())
+        {
+            return -1;
+        }
         var successfulRows = 0;
         foreach (var row in csvRows)
         {
@@ -69,7 +68,7 @@ public class FundCsvService : IFundCsvService
             }
             catch (Exception e)
             {
-                await _logger.LogError($"Unable to proccess csv row from the API {row}, thrown exception {e.Message}",
+                await _logger.LogError($"Unable to process csv row from the API {row}, thrown exception {e.Message}",
                     nameof(FundCsvService), cancellationToken);
             }
         }

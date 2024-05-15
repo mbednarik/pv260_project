@@ -1,4 +1,5 @@
-﻿using FundParser.DAL.Models;
+﻿using FundParser.DAL.Exceptions;
+using FundParser.DAL.Models;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -15,9 +16,11 @@ namespace FundParser.DAL.Repository
             _dbSet = _context.Set<TEntity>();
         }
 
-        public virtual async Task<TEntity?> GetByID(int id, CancellationToken cancellationToken = default)
+        public virtual async Task<TEntity> GetByID(int id, CancellationToken cancellationToken = default)
         {
-            return await _dbSet.FindAsync([id], cancellationToken: cancellationToken);
+            var result = await _dbSet.FindAsync([id], cancellationToken: cancellationToken) ??
+                throw new NotFoundException($"Cannot find database entity {typeof(TEntity)} with id {id}");
+            return result;
         }
 
         public virtual async Task<TEntity> Insert(TEntity entity, CancellationToken cancellationToken = default)
@@ -29,7 +32,8 @@ namespace FundParser.DAL.Repository
 
         public virtual async Task Delete(int id, CancellationToken cancellationToken = default)
         {
-            TEntity entityToDelete = await _dbSet.FindAsync([id], cancellationToken: cancellationToken) ?? throw new Exception("Entity with given Id does not exist.");
+            TEntity entityToDelete = await _dbSet.FindAsync([id], cancellationToken: cancellationToken)
+                ?? throw new NotFoundException("Entity with given Id does not exist.");
 
             Delete(entityToDelete);
         }

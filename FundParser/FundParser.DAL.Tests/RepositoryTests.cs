@@ -1,3 +1,4 @@
+using FundParser.DAL.Exceptions;
 using FundParser.DAL.Models;
 using FundParser.DAL.Repository;
 
@@ -23,11 +24,13 @@ namespace FundParser.DAL.Tests
                 });
                 await context.SaveChangesAsync();
 
-                // Act
-                var result = await repository.GetByID(0);
+                // Act & Assert
+                var result = Assert.ThrowsAsync<NotFoundException>(
+                    async () => await repository.GetByID(0));
 
                 // Assert
-                Assert.That(result, Is.Null);
+                Assert.That(result.Message,
+                    Is.EqualTo($"Cannot find database entity {typeof(Company)} with id 0"));
             }
 
             [Test]

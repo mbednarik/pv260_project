@@ -56,20 +56,7 @@ public class FundCsvServiceTests
     }
 
     [Test]
-    public void UpdateHoldings_DownloadFailed_ThrowsException()
-    {
-        // Arrange
-        downloaderServiceMock.Setup(m => m.DownloadTextFileAsStringAsync(It.IsAny<string>(),
-                It.IsAny<List<(string, string)>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((string)null!);
-
-        // Act & Assert
-        Assert.That(() => fundCsvService.UpdateHoldings(),
-            Throws.Exception.With.Message.EqualTo("Failed to download csv"));
-    }
-
-    [Test]
-    public void UpdateHoldings_ParseFailed_ThrowsException()
+    public async Task UpdateHoldings_ParseFailed_ThrowsException()
     {
         // Arrange
         downloaderServiceMock.Setup(m => m.DownloadTextFileAsStringAsync(It.IsAny<string>(),
@@ -77,11 +64,13 @@ public class FundCsvServiceTests
             .ReturnsAsync(TestCsvString);
 
         csvParsingServiceMock.Setup(m => m.ParseString(TestCsvString, It.IsAny<CancellationToken>()))
-            .Returns((List<FundCsvRow>)null!);
+            .Returns([]);
 
-        // Act & Assert
-        Assert.That(() => fundCsvService.UpdateHoldings(),
-            Throws.Exception.With.Message.EqualTo("Failed to parse csv"));
+        // Act
+        var result = await fundCsvService.UpdateHoldings();
+
+        // Assert
+        Assert.That(result, Is.EqualTo(-1));
     }
 
     [Test]
