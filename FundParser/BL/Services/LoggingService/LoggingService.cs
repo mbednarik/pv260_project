@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using FundParser.BL.Exceptions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace FundParser.BL.Services.LoggingService
@@ -12,7 +13,7 @@ namespace FundParser.BL.Services.LoggingService
         public LoggingService(IConfiguration configuration)
         {
             _logFolderPath = configuration.GetRequiredSection(LogPathSectionKey).Value
-                ?? throw new Exception($"{LogPathSectionKey} is not set in the configuration");
+                ?? throw new MissingConfigurationException($"{LogPathSectionKey} is not set in the configuration");
             if (!Directory.Exists(_logFolderPath))
             {
                 Directory.CreateDirectory(_logFolderPath);

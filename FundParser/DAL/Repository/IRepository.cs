@@ -4,7 +4,7 @@ namespace FundParser.DAL.Repository
 {
     public interface IRepository<TEntity> where TEntity : BaseEntity
     {
-        Task<TEntity?> GetByID(int id, CancellationToken cancellationToken = default);
+        Task<TEntity> GetByID(int id, CancellationToken cancellationToken = default);
 
         IQueryable<TEntity> GetQueryable();
 

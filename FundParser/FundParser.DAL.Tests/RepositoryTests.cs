@@ -1,3 +1,4 @@
+using FundParser.DAL.Exceptions;
 using FundParser.DAL.Models;
 using FundParser.DAL.Repository;
 
@@ -23,11 +24,12 @@ namespace FundParser.DAL.Tests
                 });
                 await context.SaveChangesAsync();
 
-                // Act
-                var result = await repository.GetByID(0);
-
-                // Assert
-                Assert.That(result, Is.Null);
+                // Act & Assert
+                Assert.That(async () => await repository.GetByID(0), Throws
+                    .TypeOf<EntityNotFoundException>()
+                    .With
+                    .Message
+                    .EqualTo($"Cannot find database entity {typeof(Company)} with id 0"));
             }
 
             [Test]
@@ -116,7 +118,11 @@ namespace FundParser.DAL.Tests
             public void Delete_NonExistingEntity_ThrowsException()
             {
                 // Act & Assert
-                Assert.That(async () => await repository.Delete(0), Throws.Exception.With.Message.EqualTo("Entity with given Id does not exist."));
+                Assert.That(async () => await repository.Delete(0), Throws
+                    .TypeOf<EntityNotFoundException>()
+                    .With
+                    .Message
+                    .EqualTo($"Cannot find database entity {typeof(Company)} with id 0"));
             }
 
             [Test]

@@ -1,12 +1,11 @@
 using System.Net;
 
+using FundParser.BL.Exceptions;
 using FundParser.BL.Services.DownloaderService;
 using FundParser.BL.Services.LoggingService;
 using FundParser.BL.Tests.Mocks;
 
 using Moq;
-
-using NUnit.Framework.Internal;
 
 namespace FundParser.BL.Tests.Services
 {
@@ -26,7 +25,7 @@ namespace FundParser.BL.Tests.Services
         }
 
         [Test]
-        public async Task DownloadTextFileAsString_InvalidLink_ReturnsNull()
+        public void DownloadTextFileAsString_InvalidLink_ThrowsException()
         {
             // Setup
             var urlInvalid = "invalid url";
@@ -36,18 +35,18 @@ namespace FundParser.BL.Tests.Services
                     Content = null
                 });
             var httpClient = new HttpClient(new MockHttpMessageHandler(_messageHandlerMock.Object));
-
-            // Act
             var downloaderService = new DownloaderService(_loggerMock.Object, httpClient);
-            var result = await downloaderService.DownloadTextFileAsStringAsync(urlInvalid, _validHeaders, CancellationToken.None);
 
-            //Asserts
-            Assert.That(result, Is.Null);
-            _loggerMock.Verify(logger => logger.LogError(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+            // Act, Assert
+            Assert.That(async () => await downloaderService.DownloadTextFileAsStringAsync(urlInvalid, _validHeaders, CancellationToken.None), Throws
+                .TypeOf<UriFormatException>()
+                .With
+                .Message
+                .EqualTo("Invalid URI: The format of the URI could not be determined."));
         }
 
         [Test]
-        public async Task DownloadTextFileAsString_InvalidHeader_ReturnsNull()
+        public void DownloadTextFileAsString_InvalidHeader_ThrowsException()
         {
             // Setup
             var invalidHeaders = new List<(string, string)> { ("Content-Type", "text/csv") };
@@ -57,18 +56,15 @@ namespace FundParser.BL.Tests.Services
                     Content = null
                 });
             var httpClient = new HttpClient(new MockHttpMessageHandler(_messageHandlerMock.Object));
-
-            // Act
             var downloaderService = new DownloaderService(_loggerMock.Object, httpClient);
-            var result = await downloaderService.DownloadTextFileAsStringAsync(UrlValid, invalidHeaders, CancellationToken.None);
 
-            //Asserts
-            Assert.That(result, Is.Null);
-            _loggerMock.Verify(logger => logger.LogError(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+            // Act, Assert
+            Assert.That(async () =>
+                await downloaderService.DownloadTextFileAsStringAsync(UrlValid, invalidHeaders, CancellationToken.None), Throws.TypeOf<InvalidOperationException>());
         }
 
         [Test]
-        public async Task DownloadTextFileAsString_BadResponse_ReturnsNull()
+        public void DownloadTextFileAsString_BadResponse_ThrowsException()
         {
             // Setup
             _messageHandlerMock.Setup(Setup => Setup.SendAsync(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>()))
@@ -77,33 +73,35 @@ namespace FundParser.BL.Tests.Services
                     Content = null
                 });
             var httpClient = new HttpClient(new MockHttpMessageHandler(_messageHandlerMock.Object));
-
-            // Act
             var downloaderService = new DownloaderService(_loggerMock.Object, httpClient);
-            var result = await downloaderService.DownloadTextFileAsStringAsync(UrlValid, _validHeaders, CancellationToken.None);
 
-            //Asserts
-            Assert.That(result, Is.EqualTo(null));
+            // Act, Assert
+            Assert.That(async () =>
+                await downloaderService.DownloadTextFileAsStringAsync(UrlValid, _validHeaders, CancellationToken.None), Throws
+                .TypeOf<ApiErrorException>()
+                .With
+                .Message
+                .EqualTo($"Failed to download csv, server responded with status code: {HttpStatusCode.BadRequest}"));
+
             _loggerMock.Verify(logger => logger.LogError(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
-        public async Task DownloadTextFileAsString_SendAsyncThrowsException_ReturnsNull()
+        public void DownloadTextFileAsString_SendAsyncThrowsException_ThrowsException()
         {
             // Setup
-            var exceptionMessage = "Error occured when sending request";
+            var exceptionMessage = "Error occurred when sending request";
             _messageHandlerMock.Setup(Setup => Setup.SendAsync(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>()))
                 .Throws(new HttpRequestException(exceptionMessage));
             var httpClient = new HttpClient(new MockHttpMessageHandler(_messageHandlerMock.Object));
-
-            // Act
             var downloaderService = new DownloaderService(_loggerMock.Object, httpClient);
-            var result = await downloaderService.DownloadTextFileAsStringAsync(UrlValid, _validHeaders, CancellationToken.None);
 
-            //Asserts
-            Assert.That(result, Is.Null);
-            _loggerMock.Verify(logger => logger.LogError($"Unable to download file from {UrlValid}, error: {exceptionMessage}",
-                It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+            // Act, Assert
+            Assert.That(async () => await downloaderService.DownloadTextFileAsStringAsync(UrlValid, _validHeaders, CancellationToken.None), Throws
+                .TypeOf<HttpRequestException>()
+                .With
+                .Message
+                .EqualTo(exceptionMessage));
         }
 
         [Test]
@@ -122,9 +120,9 @@ namespace FundParser.BL.Tests.Services
                     Content = new StringContent(testString)
                 });
             var httpClient = new HttpClient(new MockHttpMessageHandler(_messageHandlerMock.Object));
+            var downloaderService = new DownloaderService(_loggerMock.Object, httpClient);
 
             // Act
-            var downloaderService = new DownloaderService(_loggerMock.Object, httpClient);
             var result = await downloaderService.DownloadTextFileAsStringAsync(UrlValid, _validHeaders, CancellationToken.None);
 
             // Assert

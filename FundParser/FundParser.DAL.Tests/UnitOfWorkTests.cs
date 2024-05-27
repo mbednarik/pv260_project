@@ -1,4 +1,5 @@
-﻿using FundParser.DAL.Models;
+﻿using FundParser.DAL.Exceptions;
+using FundParser.DAL.Models;
 using FundParser.DAL.Repository;
 
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,7 @@ namespace FundParser.DAL.Tests
         public class GetByIDTests : UnitOfWorkTestsBase
         {
             [Test]
-            public async Task GetByID_NonExistingEntity_ReturnsNull()
+            public async Task GetByID_NonExistingEntity_ThrowsException()
             {
                 // Arrange
                 context.Companies.Add(new Company
@@ -23,11 +24,12 @@ namespace FundParser.DAL.Tests
                 });
                 await context.SaveChangesAsync();
 
-                // Act
-                var result = await unitOfWork.CompanyRepository.GetByID(0);
-
-                // Assert
-                Assert.That(result, Is.Null);
+                // Act & Assert
+                Assert.That(async () => await unitOfWork.CompanyRepository.GetByID(0), Throws
+                    .TypeOf<EntityNotFoundException>()
+                    .With
+                    .Message
+                    .EqualTo($"Cannot find database entity {typeof(Company)} with id 0"));
             }
 
             [Test]
@@ -136,7 +138,11 @@ namespace FundParser.DAL.Tests
             public void Delete_NonExistingEntity_ThrowsException()
             {
                 // Act & Assert
-                Assert.That(async () => await unitOfWork.CompanyRepository.Delete(0), Throws.Exception.With.Message.EqualTo("Entity with given Id does not exist."));
+                Assert.That(async () => await unitOfWork.CompanyRepository.Delete(0), Throws
+                    .TypeOf<EntityNotFoundException>()
+                    .With
+                    .Message
+                    .EqualTo($"Cannot find database entity {typeof(Company)} with id 0"));
             }
 
             [Test]

@@ -24,7 +24,7 @@ namespace FundParser.BL.Tests.Services
         }
 
         [Test]
-        public void ParseString_InvalidHeader_ReturnsNull()
+        public void ParseString_InvalidHeader_ReturnsEmptyArray()
         {
             // Setup
             var basicCsv = GetCsvString(new List<string>
@@ -39,7 +39,7 @@ namespace FundParser.BL.Tests.Services
             var result = _parser.ParseString(basicCsv)?.ToList();
 
             //Assert
-            Assert.That(result, Is.Null);
+            Assert.That(result, Is.Empty);
             _loggerMock.Verify(logger => logger.LogError(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
