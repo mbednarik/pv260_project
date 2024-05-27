@@ -17,13 +17,11 @@ namespace FundParser.BL.Services.DownloaderService
         public async Task<string> DownloadTextFileAsStringAsync(string url, IEnumerable<(string, string)> headers, CancellationToken cancellationToken = default)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, new Uri(url));
-            if (headers != null)
+            foreach (var (key, value) in headers)
             {
-                foreach (var (key, value) in headers)
-                {
-                    request.Headers.Add(key, value);
-                }
+                request.Headers.Add(key, value);
             }
+
             var response = await _client.SendAsync(request, cancellationToken);
             if (!response.IsSuccessStatusCode)
             {
@@ -31,6 +29,7 @@ namespace FundParser.BL.Services.DownloaderService
                 await _logger.LogError(message, nameof(DownloaderService), cancellationToken);
                 throw new ApiErrorException(message);
             }
+
             using var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken);
             using var reader = new StreamReader(responseStream);
 
