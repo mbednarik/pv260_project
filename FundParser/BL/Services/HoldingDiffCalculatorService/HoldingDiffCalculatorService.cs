@@ -24,7 +24,7 @@ public class HoldingDiffCalculatorService : IHoldingDiffCalculatorService
             {
                 var newHolding = newHoldingDict.GetValueOrDefault(h.CompanyId);
 
-                return newHolding is null ? GetOldHoldingDiff(h) : GetHoldingDiff(h, newHolding);
+                return newHolding == null ? GetOldHoldingDiff(h) : GetHoldingDiff(h, newHolding);
             })
             .Concat(newHoldings
                 .Where(h => !oldHoldingDict.ContainsKey(h.CompanyId))

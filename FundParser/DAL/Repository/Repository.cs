@@ -32,8 +32,7 @@ namespace FundParser.DAL.Repository
 
         public virtual async Task Delete(int id, CancellationToken cancellationToken = default)
         {
-            TEntity entityToDelete = await _dbSet.FindAsync([id], cancellationToken: cancellationToken)
-                ?? throw new EntityNotFoundException("Entity with given Id does not exist.");
+            TEntity entityToDelete = await GetByID(id, cancellationToken);
 
             Delete(entityToDelete);
         }

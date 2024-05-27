@@ -56,7 +56,7 @@ public class FundCsvServiceTests
     }
 
     [Test]
-    public async Task UpdateHoldings_ParseFailed_ThrowsException()
+    public async Task UpdateHoldings_ParseFailed_ReturnsCorrectResult()
     {
         // Arrange
         downloaderServiceMock.Setup(m => m.DownloadTextFileAsStringAsync(It.IsAny<string>(),
@@ -70,7 +70,7 @@ public class FundCsvServiceTests
         var result = await fundCsvService.UpdateHoldings();
 
         // Assert
-        Assert.That(result, Is.EqualTo(-1));
+        Assert.That(result, Is.EqualTo(0));
     }
 
     [Test]

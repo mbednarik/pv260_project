@@ -1,6 +1,7 @@
 using System.Globalization;
-using FundParser.BL.Exceptions;
+
 using FundParser.BL.DTOs;
+using FundParser.BL.Exceptions;
 using FundParser.BL.Services.CsvParsingService;
 using FundParser.BL.Services.DownloaderService;
 using FundParser.BL.Services.HoldingService;
@@ -46,18 +47,20 @@ public class FundCsvService : IFundCsvService
     public async Task<int> UpdateHoldings(CancellationToken cancellationToken = default)
     {
         var url = _configuration.GetRequiredSection(CsvUrlSectionKey).Value;
-        if (url is null)
+        if (url == null)
         {
             await _logger.LogError($"{CsvUrlSectionKey} is not set in the configuration",
                 nameof(FundCsvService), cancellationToken);
             throw new MissingConfigurationException($"{CsvUrlSectionKey} is not set in the configuration");
         }
+
         var csvString = await _downloaderService.DownloadTextFileAsStringAsync(url, _csvRequestHeaders, cancellationToken);
         var csvRows = _csvParsingService.ParseString(csvString, cancellationToken);
         if (!csvRows.Any())
         {
-            return -1;
+            return 0;
         }
+
         var successfulRows = 0;
         foreach (var row in csvRows)
         {
