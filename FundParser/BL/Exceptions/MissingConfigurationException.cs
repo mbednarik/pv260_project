@@ -1,13 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FundParser.BL.Exceptions
+﻿namespace FundParser.BL.Exceptions
 {
     public class MissingConfigurationException : Exception
     {
-        public MissingConfigurationException(string? message) : base(message) { }
+        public MissingConfigurationException()
+        {
+        }
+
+        public MissingConfigurationException(string message) : base(message)
+        {
+        }
+
+        public MissingConfigurationException(string message, Exception inner) : base(message, inner)
+        {
+        }
     }
 }

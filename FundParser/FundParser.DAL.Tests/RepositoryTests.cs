@@ -25,7 +25,7 @@ namespace FundParser.DAL.Tests
                 await context.SaveChangesAsync();
 
                 // Act & Assert
-                var result = Assert.ThrowsAsync<NotFoundException>(
+                var result = Assert.ThrowsAsync<EntityNotFoundException>(
                     async () => await repository.GetByID(0));
 
                 // Assert

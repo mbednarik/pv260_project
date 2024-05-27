@@ -25,7 +25,7 @@ namespace FundParser.DAL.Tests
                 await context.SaveChangesAsync();
 
                 // Act & Assert
-                var result = Assert.ThrowsAsync<NotFoundException>(
+                var result = Assert.ThrowsAsync<EntityNotFoundException>(
                     async () => await unitOfWork.CompanyRepository.GetByID(0));
 
                 // Assert
@@ -139,7 +139,7 @@ namespace FundParser.DAL.Tests
             public void Delete_NonExistingEntity_ThrowsException()
             {
                 // Act & Assert
-                var result = Assert.ThrowsAsync<NotFoundException>(
+                var result = Assert.ThrowsAsync<EntityNotFoundException>(
                         async () => await unitOfWork.CompanyRepository.Delete(0));
                 Assert.That(result.Message, Is.EqualTo("Entity with given Id does not exist."));
             }
